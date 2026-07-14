@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Presupuestario - ISF-251</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -37,7 +38,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-lg font-bold text-red-600 mb-4 border-b pb-2">Registrar Nuevo Gasto</h3>
                 <form id="form-gasto" class="space-y-4">
@@ -106,11 +107,47 @@
             </div>
         </div>
 
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <h3 id="titulo-seccion" class="text-lg font-bold text-gray-700">Historial de Transacciones</h3>
+                <button id="btn-toggle-vista" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200 flex items-center gap-2">
+                    Ver Distribución de Gastos (Gráfica)
+                </button>
+            </div>
+
+            <div id="vista-lista" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-bold text-red-600 mb-2 border-b pb-1 text-sm uppercase">Detalle de Gastos</h4>
+                    <div id="lista-gastos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                        <p class="text-gray-500 italic text-sm">Cargando gastos...</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-green-600 mb-2 border-b pb-1 text-sm uppercase">Límites de Presupuesto</h4>
+                    <div id="lista-presupuestos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                        <p class="text-gray-500 italic text-sm">Cargando presupuestos...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vista-grafica" class="hidden flex flex-col items-center justify-center py-6">
+                <div class="w-full max-w-md h-80 relative">
+                    <canvas id="canvasGrafica"></canvas>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // 🚨 CONFIGURACIÓN: Reemplaza esto con la URL de tu API Gateway (debe terminar en /dev o la etapa que creaste)
+        // 🚨 CONFIGURACIÓN: Reemplaza esto con la URL de tu API Gateway
         const API_BASE_URL = 'https://us54vdx1if.execute-api.us-east-1.amazonaws.com/dev'; 
+
+        // Variables Globales de Estado
+        let vistaActual = 'lista'; // 'lista' o 'grafica'
+        let datosGastos = [];
+        let datosPresupuestos = [];
+        let miGraficaInstancia = null; // Instancia de Chart.js para poder destruirla/actualizarla
 
         // Función para cargar los datos e indicadores en tiempo real (GET)
         async function actualizarResumen() {
@@ -121,7 +158,11 @@
                 const data = await response.json();
                 const ind = data.indicadores;
 
-                // Actualizar textos en la interfaz
+                // Almacenar datos en el estado global
+                datosGastos = data.lista_gastos || [];
+                datosPresupuestos = data.lista_presupuestos || [];
+
+                // 1. Actualizar tarjetas superiores
                 document.getElementById('total-presupuesto').innerText = `$${parseFloat(ind.total_presupuesto || 0).toFixed(2)}`;
                 document.getElementById('total-gastos').innerText = `$${parseFloat(ind.total_gastos || 0).toFixed(2)}`;
                 
@@ -148,10 +189,148 @@
                     estadoEl.className = "w-max px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800";
                 }
 
+                // 2. Renderizar listas de transacciones
+                renderizarListas();
+
+                // 3. Si la vista actual es la gráfica, actualizarla en tiempo real
+                if (vistaActual === 'grafica') {
+                    renderizarGrafica();
+                }
+
             } catch (err) {
                 console.error("Error al cargar el resumen:", err);
             }
         }
+
+        // Función para renderizar las transacciones en formato de lista
+        function renderizarListas() {
+            const contenedorGastos = document.getElementById('lista-gastos-contenedor');
+            const contenedorPresupuestos = document.getElementById('lista-presupuestos-contenedor');
+
+            // Renderizar lista de Gastos
+            if (datosGastos.length === 0) {
+                contenedorGastos.innerHTML = `<p class="text-gray-500 italic text-sm">No hay gastos guardados.</p>`;
+            } else {
+                contenedorGastos.innerHTML = datosGastos.map(g => `
+                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs">
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">${g.Nombre}</p>
+                            <p class="text-xs text-gray-500">${g.Fecha} • <span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${g.Tipo}</span></p>
+                            ${g.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${g.Detalle}"</p>` : ''}
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-red-600 text-sm">-$${parseFloat(g.Monto).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Renderizar lista de Presupuestos
+            if (datosPresupuestos.length === 0) {
+                contenedorPresupuestos.innerHTML = `<p class="text-gray-500 italic text-sm">No hay presupuestos establecidos.</p>`;
+            } else {
+                contenedorPresupuestos.innerHTML = datosPresupuestos.map(p => `
+                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs">
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">${p.Nombre}</p>
+                            <p class="text-xs text-gray-500">${p.Fecha} • <span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${p.Tipo}</span></p>
+                            ${p.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${p.Detalle}"</p>` : ''}
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-green-600 text-sm">+$${parseFloat(p.Monto).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Función para renderizar la gráfica circular (Pie Chart) usando Chart.js
+        function renderizarGrafica() {
+            const ctx = document.getElementById('canvasGrafica').getContext('2d');
+
+            // Destruir instancia previa para evitar que se encimen las gráficas
+            if (miGraficaInstancia) {
+                miGraficaInstancia.destroy();
+            }
+
+            if (datosGastos.length === 0) {
+                ctx.font = "14px sans-serif";
+                ctx.fillStyle = "#6B7280";
+                ctx.textAlign = "center";
+                ctx.fillText("Registra al menos un gasto para generar la gráfica", ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+
+            // Agrupar gastos por "Tipo" (Categoría) para la segmentación
+            const categoriasValores = {};
+            datosGastos.forEach(g => {
+                const categoria = g.Tipo || 'Otros';
+                const monto = parseFloat(g.Monto || 0);
+                categoriasValores[categoria] = (categoriasValores[categoria] || 0) + monto;
+            });
+
+            const etiquetas = Object.keys(categoriasValores);
+            const valores = Object.values(categoriasValores);
+
+            // Generar gráfica circular
+            miGraficaInstancia = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: etiquetas,
+                    datasets: [{
+                        data: valores,
+                        backgroundColor: [
+                            '#EF4444', // Red-500
+                            '#3B82F6', // Blue-500
+                            '#F59E0B', // Amber-500
+                            '#10B981', // Emerald-500
+                            '#8B5CF6', // Violet-500
+                            '#EC4899'  // Pink-500
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Escuchar el evento de click en el botón de cambio de vista
+        document.getElementById('btn-toggle-vista').addEventListener('click', () => {
+            const contenedorLista = document.getElementById('vista-lista');
+            const contenedorGrafica = document.getElementById('vista-grafica');
+            const boton = document.getElementById('btn-toggle-vista');
+            const titulo = document.getElementById('titulo-seccion');
+
+            if (vistaActual === 'lista') {
+                // Cambiar a gráfica
+                contenedorLista.classList.add('hidden');
+                contenedorGrafica.classList.remove('hidden');
+                boton.innerText = 'Ver Listado de Registros';
+                titulo.innerText = 'Análisis de Distribución de Gastos';
+                vistaActual = 'grafica';
+                renderizarGrafica(); // Renderizar al cambiar
+            } else {
+                // Cambiar a lista
+                contenedorLista.classList.remove('hidden');
+                contenedorGrafica.classList.add('hidden');
+                boton.innerText = 'Ver Distribución de Gastos (Gráfica)';
+                titulo.innerText = 'Historial de Transacciones';
+                vistaActual = 'lista';
+            }
+        });
 
         // Manejar el envío del formulario de GASTOS (POST)
         document.getElementById('form-gasto').addEventListener('submit', async (e) => {
@@ -173,7 +352,7 @@
                 if (response.ok) {
                     alert('¡Gasto guardado en DynamoDB exitosamente!');
                     document.getElementById('form-gasto').reset();
-                    actualizarResumen(); // Actualiza los balances
+                    actualizarResumen(); // Actualiza los datos y la vista en vivo
                 }
             } catch (err) {
                 alert('Error al conectar con API Gateway');
@@ -200,7 +379,7 @@
                 if (response.ok) {
                     alert('¡Presupuesto establecido exitosamente!');
                     document.getElementById('form-presupuesto').reset();
-                    actualizarResumen(); // Actualiza los balances
+                    actualizarResumen(); // Actualiza los datos y la vista en vivo
                 }
             } catch (err) {
                 alert('Error al conectar con API Gateway');
