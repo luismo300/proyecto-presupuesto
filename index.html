@@ -6,7 +6,7 @@
     <title>Control Presupuestario - ISF-251</title>
     <!-- Tailwind CSS para diseño rápido y moderno -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js para renderizar la gráfica redonda -->
+    <!-- Chart.js para renderizar las gráficas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -21,25 +21,86 @@
 
     <div class="container mx-auto p-6 max-w-6xl">
         
-        <!-- SECCIÓN 1: INDICADORES EN TIEMPO REAL -->
+        <!-- SECCIÓN 1: INDICADORES EN TIEMPO REAL POR PERIODO -->
         <h2 class="text-lg font-bold text-gray-700 mb-4">Indicadores de Toma de Decisiones</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-blue-500">
-                <p class="text-sm text-gray-500 uppercase font-semibold">Presupuesto Total</p>
-                <p id="total-presupuesto" class="text-2xl font-bold text-gray-800">$0.00</p>
+            
+            <!-- ACUMULADO TOTAL -->
+            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-blue-500 flex flex-col justify-between">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Acumulado Total</h3>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Presupuesto:</span>
+                        <span id="total-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Gastos:</span>
+                        <span id="total-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
+                        <span class="text-gray-700">Balance:</span>
+                        <span id="balance-actual" class="text-gray-800">$0.00</span>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-red-500">
-                <p class="text-sm text-gray-500 uppercase font-semibold">Gastos Totales</p>
-                <p id="total-gastos" class="text-2xl font-bold text-gray-800">$0.00</p>
+
+            <!-- PERIODO SEMANAL -->
+            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-purple-500 flex flex-col justify-between">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Periodo Semanal</h3>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Presupuesto:</span>
+                        <span id="semanal-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Gastos:</span>
+                        <span id="semanal-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
+                        <span class="text-gray-700">Balance:</span>
+                        <span id="semanal-balance" class="text-gray-800">$0.00</span>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-green-500">
-                <p class="text-sm text-gray-500 uppercase font-semibold">Balance Actual</p>
-                <p id="balance-actual" class="text-2xl font-bold text-gray-800">$0.00</p>
+
+            <!-- PERIODO MENSUAL -->
+            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-emerald-500 flex flex-col justify-between">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Periodo Mensual</h3>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Presupuesto:</span>
+                        <span id="mensual-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Gastos:</span>
+                        <span id="mensual-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
+                        <span class="text-gray-700">Balance:</span>
+                        <span id="mensual-balance" class="text-gray-800">$0.00</span>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-purple-500 flex flex-col justify-between">
-                <p class="text-sm text-gray-500 uppercase font-semibold">Estado de Flujo</p>
-                <span id="estado-presupuesto" class="w-max px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-800">Cargando...</span>
+
+            <!-- PERIODO ANUAL -->
+            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-amber-500 flex flex-col justify-between">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Periodo Anual</h3>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Presupuesto:</span>
+                        <span id="anual-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Gastos:</span>
+                        <span id="anual-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
+                        <span class="text-gray-700">Balance:</span>
+                        <span id="anual-balance" class="text-gray-800">$0.00</span>
+                    </div>
+                </div>
             </div>
+
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -49,12 +110,14 @@
                 <form id="form-gasto" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Nombre del Gasto</label>
-                        <input type="text" id="gasto-nombre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="gasto-nombre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    
+                    <!-- Fila con Categoría, Periodo de Gasto y Monto -->
+                    <div class="grid grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Tipo/Categoría</label>
-                            <select id="gasto-tipo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                            <label class="block text-sm font-medium text-gray-700">Categoría</label>
+                            <select id="gasto-tipo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
                                 <option value="Comida">Comida</option>
                                 <option value="Transporte">Transporte</option>
                                 <option value="Entretenimiento">Entretenimiento</option>
@@ -62,19 +125,28 @@
                             </select>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700">Frecuencia / Periodo</label>
+                            <select id="gasto-periodo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
+                                <option value="Semanal">Semanal</option>
+                                <option value="Mensual">Mensual</option>
+                                <option value="Anual">Anual</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700">Monto ($)</label>
-                            <input type="number" step="0.01" id="gasto-monto" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                            <input type="number" step="0.01" id="gasto-monto" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
                         </div>
                     </div>
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Fecha</label>
-                        <input type="date" id="gasto-fecha" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                        <input type="date" id="gasto-fecha" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Detalle</label>
-                        <textarea id="gasto-detalle" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50"></textarea>
+                        <textarea id="gasto-detalle" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm"></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">Guardar Gasto</button>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200 text-sm">Guardar Gasto</button>
                 </form>
             </div>
 
@@ -84,12 +156,12 @@
                 <form id="form-presupuesto" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Nombre del Presupuesto</label>
-                        <input type="text" id="pres-nombre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                        <input type="text" id="pres-nombre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Periodo</label>
-                            <select id="pres-tipo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                            <label class="block text-sm font-medium text-gray-700">Periodo de Límite</label>
+                            <select id="pres-tipo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
                                 <option value="Semanal">Semanal</option>
                                 <option value="Mensual">Mensual</option>
                                 <option value="Anual">Anual</option>
@@ -97,18 +169,18 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Monto Límite ($)</label>
-                            <input type="number" step="0.01" id="pres-monto" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                            <input type="number" step="0.01" id="pres-monto" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
-                        <input type="date" id="pres-fecha" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                        <input type="date" id="pres-fecha" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Detalle / Notas</label>
-                        <textarea id="pres-detalle" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50"></textarea>
+                        <textarea id="pres-detalle" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm"></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200">Establecer Límite</button>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200 text-sm">Establecer Límite</button>
                 </form>
             </div>
         </div>
@@ -117,8 +189,8 @@
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div class="flex justify-between items-center border-b pb-4 mb-4">
                 <h3 id="titulo-seccion" class="text-lg font-bold text-gray-700">Historial de Transacciones</h3>
-                <button id="btn-toggle-vista" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200 flex items-center gap-2">
-                    Ver Distribución de Gastos (Gráfica)
+                <button id="btn-toggle-vista" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200 flex items-center gap-2 text-sm">
+                    Ver Gráficas y Distribución
                 </button>
             </div>
 
@@ -140,10 +212,21 @@
                 </div>
             </div>
 
-            <!-- CONTENEDOR 2: GRÁFICA REDONDA (Oculta por defecto) -->
-            <div id="vista-grafica" class="hidden flex flex-col items-center justify-center py-6">
-                <div class="w-full max-w-md h-80 relative">
-                    <canvas id="canvasGrafica"></canvas>
+            <!-- CONTENEDOR 2: GRÁFICAS PARALELAS (Oculto por defecto) -->
+            <div id="vista-grafica" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
+                <!-- Gráfica 1: Distribución de Gastos -->
+                <div class="flex flex-col items-center">
+                    <h4 class="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">Gastos por Categoría</h4>
+                    <div class="w-full max-w-xs h-64 relative">
+                        <canvas id="canvasGraficaGastos"></canvas>
+                    </div>
+                </div>
+                <!-- Gráfica 2: Presupuestos vs Gastos por Periodo -->
+                <div class="flex flex-col items-center">
+                    <h4 class="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">Presupuesto vs Gasto Real</h4>
+                    <div class="w-full max-w-sm h-64 relative">
+                        <canvas id="canvasGraficaPresupuesto"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -152,14 +235,14 @@
 
     <!-- CONEXIÓN JAVASCRIPT CON API GATEWAY Y MANEJO DE VISTAS -->
     <script>
-        // 🚨 CONFIGURACIÓN: Reemplaza esto con la URL de tu API Gateway
         const API_BASE_URL = 'https://us54vdx1if.execute-api.us-east-1.amazonaws.com/dev'; 
 
         // Variables Globales de Estado
         let vistaActual = 'lista';
         let datosGastos = [];
         let datosPresupuestos = [];
-        let miGraficaInstancia = null;
+        let instGraficaGastos = null;
+        let instGraficaPresupuesto = null;
 
         // Función para cargar los datos e indicadores en tiempo real (GET)
         async function actualizarResumen() {
@@ -168,39 +251,60 @@
                 if (!response.ok) throw new Error('Error al consultar datos');
                 
                 const data = await response.json();
-                const ind = data.indicadores;
 
                 datosGastos = data.lista_gastos || [];
                 datosPresupuestos = data.lista_presupuestos || [];
 
-                document.getElementById('total-presupuesto').innerText = `$${parseFloat(ind.total_presupuesto || 0).toFixed(2)}`;
-                document.getElementById('total-gastos').innerText = `$${parseFloat(ind.total_gastos || 0).toFixed(2)}`;
-                
-                const balance = parseFloat(ind.balance_actual || 0);
-                const balanceEl = document.getElementById('balance-actual');
-                balanceEl.innerText = `$${balance.toFixed(2)}`;
+                // --- 🧮 CÁLCULO DE INDICADORES EN EL FRONTEND ---
+                let presTotal = 0, presSemanal = 0, presMensual = 0, presAnual = 0;
+                let gasTotal = 0, gasSemanal = 0, gasMensual = 0, gasAnual = 0;
 
-                if (balance < 0) {
-                    balanceEl.className = "text-2xl font-bold text-red-600";
-                } else {
-                    balanceEl.className = "text-2xl font-bold text-green-600";
-                }
+                // 1. Procesar Presupuestos
+                datosPresupuestos.forEach(p => {
+                    const monto = parseFloat(p.Monto || 0);
+                    presTotal += monto;
+                    if (p.Tipo === 'Semanal') presSemanal += monto;
+                    else if (p.Tipo === 'Mensual') presMensual += monto;
+                    else if (p.Tipo === 'Anual') presAnual += monto;
+                });
 
-                const estadoEl = document.getElementById('estado-presupuesto');
-                estadoEl.innerText = ind.estado_presupuesto;
-                
-                if (ind.estado_presupuesto === 'Excedido') {
-                    estadoEl.className = "w-max px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800";
-                } else if (ind.estado_presupuesto === 'Cumplido') {
-                    estadoEl.className = "w-max px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800";
-                } else {
-                    estadoEl.className = "w-max px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800";
-                }
+                // 2. Procesar Gastos (Soporta compatibilidad si un gasto viejo no tiene 'Periodo')
+                datosGastos.forEach(g => {
+                    const monto = parseFloat(g.Monto || 0);
+                    gasTotal += monto;
+                    const freq = g.Periodo || 'Mensual'; 
+                    if (freq === 'Semanal') gasSemanal += monto;
+                    else if (freq === 'Mensual') gasMensual += monto;
+                    else if (freq === 'Anual') gasAnual += monto;
+                });
+
+                // 3. Calcular balances correspondientes
+                const balTotal = presTotal - gasTotal;
+                const balSemanal = presSemanal - gasSemanal;
+                const balMensual = presMensual - gasMensual;
+                const balAnual = presAnual - gasAnual;
+
+                // --- 🖥️ ACTUALIZAR ELEMENTOS DE LA INTERFAZ ---
+                document.getElementById('total-presupuesto').innerText = `$${presTotal.toFixed(2)}`;
+                document.getElementById('total-gastos').innerText = `-$${gasTotal.toFixed(2)}`;
+                actualizarEstiloBalance('balance-actual', balTotal);
+
+                document.getElementById('semanal-presupuesto').innerText = `$${presSemanal.toFixed(2)}`;
+                document.getElementById('semanal-gastos').innerText = `-$${gasSemanal.toFixed(2)}`;
+                actualizarEstiloBalance('semanal-balance', balSemanal);
+
+                document.getElementById('mensual-presupuesto').innerText = `$${presMensual.toFixed(2)}`;
+                document.getElementById('mensual-gastos').innerText = `-$${gasMensual.toFixed(2)}`;
+                actualizarEstiloBalance('mensual-balance', balMensual);
+
+                document.getElementById('anual-presupuesto').innerText = `$${presAnual.toFixed(2)}`;
+                document.getElementById('anual-gastos').innerText = `-$${gasAnual.toFixed(2)}`;
+                actualizarEstiloBalance('anual-balance', balAnual);
 
                 renderizarListas();
 
                 if (vistaActual === 'grafica') {
-                    renderizarGrafica();
+                    renderizarGraficas(presSemanal, presMensual, presAnual, gasSemanal, gasMensual, gasAnual);
                 }
 
             } catch (err) {
@@ -208,7 +312,18 @@
             }
         }
 
-        // Función para renderizar las transacciones en formato de lista (CON BOTÓN ELIMINAR X EN ESQUINA)
+        // Auxiliar para colorear dinámicamente los balances
+        function actualizarEstiloBalance(idElemento, balance) {
+            const el = document.getElementById(idElemento);
+            el.innerText = `$${balance.toFixed(2)}`;
+            if (balance < 0) {
+                el.className = "font-bold text-red-600 text-sm";
+            } else {
+                el.className = "font-bold text-green-600 text-sm";
+            }
+        }
+
+        // Función para renderizar las transacciones en la lista
         function renderizarListas() {
             const contenedorGastos = document.getElementById('lista-gastos-contenedor');
             const contenedorPresupuestos = document.getElementById('lista-presupuestos-contenedor');
@@ -221,14 +336,17 @@
                     <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs relative pr-8">
                         <div>
                             <p class="font-semibold text-gray-800 text-sm">${g.Nombre}</p>
-                            <p class="text-xs text-gray-500">${g.Fecha} • <span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${g.Tipo}</span></p>
-                            ${g.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${g.Detalle}"</p>` : ''}
+                            <div class="flex gap-1.5 items-center mt-1">
+                                <span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">${g.Tipo}</span>
+                                <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">${g.Periodo || 'Mensual'}</span>
+                                <span class="text-[10px] text-gray-400">${g.Fecha}</span>
+                            </div>
+                            ${g.Detalle ? `<p class="text-xs text-gray-400 italic mt-1.5">"${g.Detalle}"</p>` : ''}
                         </div>
                         <div class="flex items-center">
                             <span class="font-bold text-red-600 text-sm">-$${parseFloat(g.Monto).toFixed(2)}</span>
                         </div>
-                        <!-- Botón Eliminar Gasto (X en esquina superior derecha) -->
-                        <button onclick="eliminarGasto('${g.id_gasto}')" class="absolute top-1 right-2 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Gasto">
+                        <button onclick="eliminarGasto('${g.id_gasto}')" class="absolute top-1.5 right-2.5 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Gasto">
                             &times;
                         </button>
                     </div>
@@ -243,14 +361,13 @@
                     <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs relative pr-8">
                         <div>
                             <p class="font-semibold text-gray-800 text-sm">${p.Nombre}</p>
-                            <p class="text-xs text-gray-500">${p.Fecha} • <span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${p.Tipo}</span></p>
+                            <p class="text-xs text-gray-500 mt-1">${p.Fecha} • <span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${p.Tipo}</span></p>
                             ${p.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${p.Detalle}"</p>` : ''}
                         </div>
                         <div class="flex items-center">
                             <span class="font-bold text-green-600 text-sm">+$${parseFloat(p.Monto).toFixed(2)}</span>
                         </div>
-                        <!-- Botón Eliminar Presupuesto (X en esquina superior derecha) -->
-                        <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="absolute top-1 right-2 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Presupuesto">
+                        <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="absolute top-1.5 right-2.5 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Presupuesto">
                             &times;
                         </button>
                     </div>
@@ -258,18 +375,16 @@
             }
         }
 
-        // NUEVA FUNCIÓN: Llamar API DELETE para Gastos
+        // Llamar API DELETE para Gastos
         async function eliminarGasto(idGasto) {
             if (!confirm('¿Estás seguro de que deseas eliminar este gasto?')) return;
-            
             try {
                 const response = await fetch(`${API_BASE_URL}/gasto?id_gasto=${idGasto}`, {
                     method: 'DELETE'
                 });
-                
                 if (response.ok) {
                     alert('Gasto eliminado exitosamente');
-                    actualizarResumen(); // Recargar datos y recalcular indicadores en caliente
+                    actualizarResumen();
                 } else {
                     const errData = await response.json();
                     alert(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`);
@@ -279,15 +394,13 @@
             }
         }
 
-        // NUEVA FUNCIÓN: Llamar API DELETE para Presupuestos
+        // Llamar API DELETE para Presupuestos
         async function eliminarPresupuesto(idPresupuesto) {
             if (!confirm('¿Estás seguro de que deseas eliminar este presupuesto?')) return;
-
             try {
                 const response = await fetch(`${API_BASE_URL}/presupuesto?id_presupuesto=${idPresupuesto}`, {
                     method: 'DELETE'
                 });
-
                 if (response.ok) {
                     alert('Presupuesto eliminado exitosamente');
                     actualizarResumen();
@@ -300,41 +413,28 @@
             }
         }
 
-        // Función para renderizar la gráfica circular (Pie Chart) usando Chart.js
-        function renderizarGrafica() {
-            const ctx = document.getElementById('canvasGrafica').getContext('2d');
+        // Función para renderizar las dos gráficas simultáneamente
+        function renderizarGraficas(presS, presM, presA, gasS, gasM, gasA) {
+            // Destruir instancias previas si existen
+            if (instGraficaGastos) instGraficaGastos.destroy();
+            if (instGraficaPresupuesto) instGraficaPresupuesto.destroy();
 
-            if (miGraficaInstancia) {
-                miGraficaInstancia.destroy();
-            }
-
-            if (datosGastos.length === 0) {
-                ctx.font = "14px sans-serif";
-                ctx.fillStyle = "#6B7280";
-                ctx.textAlign = "center";
-                ctx.fillText("Registra al menos un gasto para generar la gráfica", ctx.canvas.width / 2, ctx.canvas.height / 2);
-                return;
-            }
-
-            const categoriasValores = {};
+            // --- GRÁFICA 1: GASTOS POR CATEGORÍA (PIE) ---
+            const ctxGastos = document.getElementById('canvasGraficaGastos').getContext('2d');
+            const catValores = {};
             datosGastos.forEach(g => {
                 const categoria = g.Tipo || 'Otros';
                 const monto = parseFloat(g.Monto || 0);
-                categoriasValores[categoria] = (categoriasValores[categoria] || 0) + monto;
+                catValores[categoria] = (catValores[categoria] || 0) + monto;
             });
 
-            const etiquetas = Object.keys(categoriasValores);
-            const valores = Object.values(categoriasValores);
-
-            miGraficaInstancia = new Chart(ctx, {
+            instGraficaGastos = new Chart(ctxGastos, {
                 type: 'pie',
                 data: {
-                    labels: etiquetas,
+                    labels: Object.keys(catValores),
                     datasets: [{
-                        data: valores,
-                        backgroundColor: [
-                            '#EF4444', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899'
-                        ],
+                        data: Object.values(catValores),
+                        backgroundColor: ['#EF4444', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899'],
                         borderWidth: 1
                     }]
                 },
@@ -342,10 +442,48 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { font: { size: 12 } }
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // --- GRÁFICA 2: COMPARATIVO PRESUPUESTO VS GASTOS (BAR) ---
+            const ctxPresupuesto = document.getElementById('canvasGraficaPresupuesto').getContext('2d');
+            instGraficaPresupuesto = new Chart(ctxPresupuesto, {
+                type: 'bar',
+                data: {
+                    labels: ['Semanal', 'Mensual', 'Anual'],
+                    datasets: [
+                        {
+                            label: 'Límite Presupuestado',
+                            data: [presS, presM, presA],
+                            backgroundColor: '#10B981',
+                            borderColor: '#059669',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Gasto Realizado',
+                            data: [gasS, gasM, gasA],
+                            backgroundColor: '#EF4444',
+                            borderColor: '#DC2626',
+                            borderWidth: 1
                         }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { font: { size: 10 } }
+                        },
+                        x: {
+                            ticks: { font: { size: 10 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } }
                     }
                 }
             });
@@ -362,24 +500,25 @@
                 contenedorLista.classList.add('hidden');
                 contenedorGrafica.classList.remove('hidden');
                 boton.innerText = 'Ver Listado de Registros';
-                titulo.innerText = 'Análisis de Distribución de Gastos';
+                titulo.innerText = 'Distribución Visual de Recursos';
                 vistaActual = 'grafica';
-                renderizarGrafica();
+                actualizarResumen(); // Dispara la recreación de las gráficas
             } else {
                 contenedorLista.classList.remove('hidden');
                 contenedorGrafica.classList.add('hidden');
-                boton.innerText = 'Ver Distribución de Gastos (Gráfica)';
+                boton.innerText = 'Ver Gráficas y Distribución';
                 titulo.innerText = 'Historial de Transacciones';
                 vistaActual = 'lista';
             }
         });
 
-        // Formularios POST
+        // Evento POST: Guardar Gasto (Envia campo 'Periodo' a tu Lambda)
         document.getElementById('form-gasto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
                 Nombre: document.getElementById('gasto-nombre').value,
                 Tipo: document.getElementById('gasto-tipo').value,
+                Periodo: document.getElementById('gasto-periodo').value, // 🆕 NUEVO CAMPO ENVIADO
                 Monto: parseFloat(document.getElementById('gasto-monto').value),
                 Fecha: document.getElementById('gasto-fecha').value,
                 Detalle: document.getElementById('gasto-detalle').value
@@ -392,7 +531,7 @@
                     body: JSON.stringify(payload)
                 });
                 if (response.ok) {
-                    alert('¡Gasto guardado en DynamoDB exitosamente!');
+                    alert('¡Gasto guardado exitosamente!');
                     document.getElementById('form-gasto').reset();
                     actualizarResumen();
                 }
@@ -401,6 +540,7 @@
             }
         });
 
+        // Evento POST: Guardar Presupuesto
         document.getElementById('form-presupuesto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
