@@ -8,235 +8,294 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js para renderizar las gráficas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
 
-    <!-- Barra de navegación -->
-    <nav class="bg-blue-600 text-white p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">Sistema de Control Presupuestario</h1>
-            <span class="text-sm bg-blue-700 px-3 py-1 rounded">Proyecto Semestral</span>
+    <!-- Barra de navegación premium -->
+    <nav class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 backdrop-blur-md bg-opacity-95 border-b border-slate-800">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-indigo-600 rounded-xl">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">Finanzas Control</h1>
+                    <p class="text-xs text-slate-400">ISF-251 • Universidad Tecnológica</p>
+                </div>
+            </div>
+            <span class="text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1.5 rounded-full uppercase tracking-wider">Proyecto Semestral</span>
         </div>
     </nav>
 
-    <div class="container mx-auto p-6 max-w-6xl">
+    <div class="container mx-auto px-4 md:px-6 mt-8 max-w-7xl">
         
-        <!-- SECCIÓN 1: INDICADORES EN TIEMPO REAL POR PERIODO -->
-        <h2 class="text-lg font-bold text-gray-700 mb-4">Indicadores de Toma de Decisiones</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <!-- SECCIÓN 1: INDICADORES EN TIEMPO REAL -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
             
             <!-- ACUMULADO TOTAL -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-blue-500 flex flex-col justify-between">
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Acumulado Total</h3>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Balance General</span>
+                    <div class="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Presupuesto:</span>
-                        <span id="total-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Pág. Presupuestos:</span>
+                        <span id="total-presupuesto" class="font-semibold text-slate-800">$0.00</span>
                     </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Gastos:</span>
-                        <span id="total-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Gastos Cargados:</span>
+                        <span id="total-gastos" class="font-semibold text-rose-600">-$0.00</span>
                     </div>
-                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
-                        <span class="text-gray-700">Balance:</span>
-                        <span id="balance-actual" class="text-gray-800">$0.00</span>
+                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                        <span class="text-xs font-bold text-slate-700">Balance:</span>
+                        <span id="balance-actual" class="text-sm font-bold text-slate-800">$0.00</span>
                     </div>
                 </div>
             </div>
 
             <!-- PERIODO SEMANAL -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-purple-500 flex flex-col justify-between">
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Periodo Semanal</h3>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Periodo Semanal</span>
+                    <div class="p-1.5 bg-violet-50 rounded-lg text-violet-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Presupuesto:</span>
-                        <span id="semanal-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Límite:</span>
+                        <span id="semanal-presupuesto" class="font-semibold text-slate-800">$0.00</span>
                     </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Gastos:</span>
-                        <span id="semanal-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Gastado:</span>
+                        <span id="semanal-gastos" class="font-semibold text-rose-600">-$0.00</span>
                     </div>
-                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
-                        <span class="text-gray-700">Balance:</span>
-                        <span id="semanal-balance" class="text-gray-800">$0.00</span>
+                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                        <span class="text-xs font-bold text-slate-700">Balance:</span>
+                        <span id="semanal-balance" class="text-sm font-bold text-slate-800">$0.00</span>
                     </div>
                 </div>
             </div>
 
             <!-- PERIODO MENSUAL -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-emerald-500 flex flex-col justify-between">
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Periodo Mensual</h3>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Periodo Mensual</span>
+                    <div class="p-1.5 bg-emerald-50 rounded-lg text-emerald-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Presupuesto:</span>
-                        <span id="mensual-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Límite:</span>
+                        <span id="mensual-presupuesto" class="font-semibold text-slate-800">$0.00</span>
                     </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Gastos:</span>
-                        <span id="mensual-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Gastado:</span>
+                        <span id="mensual-gastos" class="font-semibold text-rose-600">-$0.00</span>
                     </div>
-                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
-                        <span class="text-gray-700">Balance:</span>
-                        <span id="mensual-balance" class="text-gray-800">$0.00</span>
+                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                        <span class="text-xs font-bold text-slate-700">Balance:</span>
+                        <span id="mensual-balance" class="text-sm font-bold text-slate-800">$0.00</span>
                     </div>
                 </div>
             </div>
 
             <!-- PERIODO ANUAL -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-amber-500 flex flex-col justify-between">
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider border-b pb-1 mb-2">Periodo Anual</h3>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Periodo Anual</span>
+                    <div class="p-1.5 bg-amber-50 rounded-lg text-amber-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    </div>
+                </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Presupuesto:</span>
-                        <span id="anual-presupuesto" class="font-semibold text-gray-800">$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Límite:</span>
+                        <span id="anual-presupuesto" class="font-semibold text-slate-800">$0.00</span>
                     </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-500">Gastos:</span>
-                        <span id="anual-gastos" class="font-semibold text-red-600">-$0.00</span>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span>Gastado:</span>
+                        <span id="anual-gastos" class="font-semibold text-rose-600">-$0.00</span>
                     </div>
-                    <div class="flex justify-between border-t pt-1 text-sm font-bold">
-                        <span class="text-gray-700">Balance:</span>
-                        <span id="anual-balance" class="text-gray-800">$0.00</span>
+                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                        <span class="text-xs font-bold text-slate-700">Balance:</span>
+                        <span id="anual-balance" class="text-sm font-bold text-slate-800">$0.00</span>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <!-- SECCIÓN 2: FORMULARIO DE GASTOS -->
-            <div class="bg-white p-6 rounded-lg shadow-sm">
-                <h3 class="text-lg font-bold text-red-600 mb-4 border-b pb-2">Registrar Nuevo Gasto</h3>
-                <form id="form-gasto" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Nombre del Gasto</label>
-                        <input type="text" id="gasto-nombre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                    </div>
-                    
-                    <!-- Fila con Categoría, Periodo de Gasto y Monto -->
-                    <div class="grid grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Categoría</label>
-                            <select id="gasto-tipo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                                <option value="Comida">Comida</option>
-                                <option value="Transporte">Transporte</option>
-                                <option value="Entretenimiento">Entretenimiento</option>
-                                <option value="Servicios">Servicios</option>
-                                <option value="Vivienda">Vivienda</option>
-                                <option value="Utensilios">Utensilios Diarios</option>
-                                <option value="Educación">Educación</option>
-                                <option value="Suscripciones">Suscripciones</option>
-                                <option value="Salud">Salud</option>
-                                <option value="Otros">Otros</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Frecuencia / Periodo</label>
-                            <select id="gasto-periodo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                                <option value="Semanal">Semanal</option>
-                                <option value="Mensual">Mensual</option>
-                                <option value="Anual">Anual</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Monto ($)</label>
-                            <input type="number" step="0.01" id="gasto-monto" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                        </div>
-                    </div>
+        <!-- SECCIÓN CENTRAL DE TRABAJO -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            
+            <!-- PANEL IZQUIERDO: TABS DE FORMULARIOS UNIFICADOS (5 COLS) -->
+            <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <!-- Selector de Tipo de Operación -->
+                <div class="flex bg-slate-50 p-1.5 border-b border-slate-100">
+                    <button id="tab-btn-gasto" class="w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 bg-white text-rose-600 shadow-sm flex justify-center items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span> Registrar Gasto
+                    </button>
+                    <button id="tab-btn-presupuesto" class="w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 text-slate-500 hover:text-slate-800 flex justify-center items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-transparent"></span> Definir Límite
+                    </button>
+                </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Fecha</label>
-                        <input type="date" id="gasto-fecha" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Detalle</label>
-                        <textarea id="gasto-detalle" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200 text-sm">Guardar Gasto</button>
-                </form>
+                <div class="p-6">
+                    <!-- FORMULARIO 1: REGISTRAR GASTO -->
+                    <form id="form-gasto" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Gasto</label>
+                            <input type="text" id="gasto-nombre" required placeholder="Ej. Supermercado, Gasolina..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-sm">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Categoría</label>
+                                <select id="gasto-tipo" class="w-full rounded-xl border border-slate-200 p-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm">
+                                    <option value="Comida">Comida</option>
+                                    <option value="Transporte">Transporte</option>
+                                    <option value="Entretenimiento">Entretenimiento</option>
+                                    <option value="Servicios">Servicios</option>
+                                    <option value="Vivienda">Vivienda</option>
+                                    <option value="Utensilios">Utensilios</option>
+                                    <option value="Educación">Educación</option>
+                                    <option value="Suscripciones">Suscripciones</option>
+                                    <option value="Salud">Salud</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Frecuencia</label>
+                                <select id="gasto-periodo" class="w-full rounded-xl border border-slate-200 p-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm">
+                                    <option value="Semanal">Semanal</option>
+                                    <option value="Mensual" selected>Mensual</option>
+                                    <option value="Anual">Anual</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Monto ($)</label>
+                                <input type="number" step="0.01" id="gasto-monto" placeholder="0.00" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Fecha de Transacción</label>
+                            <input type="date" id="gasto-fecha" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Notas / Detalle</label>
+                            <textarea id="gasto-detalle" rows="2" placeholder="Información opcional..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-rose-600/10 hover:shadow-lg transition duration-200 text-sm flex justify-center items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Guardar Gasto
+                        </button>
+                    </form>
+
+                    <!-- FORMULARIO 2: ESTABLECER PRESUPUESTO (Oculto por defecto) -->
+                    <form id="form-presupuesto" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Presupuesto</label>
+                            <input type="text" id="pres-nombre" required placeholder="Ej. Presupuesto Comida, Límite Ocio..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Periodo Límite</label>
+                                <select id="pres-tipo" class="w-full rounded-xl border border-slate-200 p-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                                    <option value="Semanal">Semanal</option>
+                                    <option value="Mensual" selected>Mensual</option>
+                                    <option value="Anual">Anual</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Monto Límite ($)</label>
+                                <input type="number" step="0.01" id="pres-monto" placeholder="0.00" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Fecha de Inicio</label>
+                            <input type="date" id="pres-fecha" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Notas / Detalle</label>
+                            <textarea id="pres-detalle" rows="2" placeholder="Propósito de este presupuesto..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-emerald-600/10 hover:shadow-lg transition duration-200 text-sm flex justify-center items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg> Establecer Límite
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <!-- SECCIÓN 3: FORMULARIO DE PRESUPUESTOS -->
-            <div class="bg-white p-6 rounded-lg shadow-sm">
-                <h3 class="text-lg font-bold text-green-600 mb-4 border-b pb-2">Establecer Presupuesto</h3>
-                <form id="form-presupuesto" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Nombre del Presupuesto</label>
-                        <input type="text" id="pres-nombre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Periodo de Límite</label>
-                            <select id="pres-tipo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                                <option value="Semanal">Semanal</option>
-                                <option value="Mensual">Mensual</option>
-                                <option value="Anual">Anual</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Monto Límite ($)</label>
-                            <input type="number" step="0.01" id="pres-monto" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
-                        <input type="date" id="pres-fecha" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Detalle / Notas</label>
-                        <textarea id="pres-detalle" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 text-sm"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200 text-sm">Establecer Límite</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- SECCIÓN DE VISUALIZACIÓN DINÁMICA -->
-        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div class="flex justify-between items-center border-b pb-4 mb-4">
-                <h3 id="titulo-seccion" class="text-lg font-bold text-gray-700">Historial de Transacciones</h3>
-                <button id="btn-toggle-vista" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200 flex items-center gap-2 text-sm">
-                    Ver Gráficas y Distribución
-                </button>
-            </div>
-
-            <!-- CONTENEDOR 1: LISTA DE HISTORIAL (Vista por defecto) -->
-            <div id="vista-lista" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Columna de Gastos -->
+            <!-- PANEL DERECHO: VISOR DINÁMICO DE DATOS (7 COLS) -->
+            <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
                 <div>
-                    <h4 class="font-bold text-red-600 mb-2 border-b pb-1 text-sm uppercase">Detalle de Gastos</h4>
-                    <div id="lista-gastos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                        <p class="text-gray-500 italic text-sm">Cargando gastos...</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-6 gap-3">
+                        <h3 id="titulo-seccion" class="font-bold text-slate-800 text-base">Historial de Transacciones</h3>
+                        
+                        <!-- Tabs de Conmutación de Vista -->
+                        <div class="flex bg-slate-100 p-1 rounded-xl">
+                            <button id="btn-switch-lista" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg> Listado
+                            </button>
+                            <button id="btn-switch-grafica" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg> Analíticas
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <!-- Columna de Presupuestos -->
-                <div>
-                    <h4 class="font-bold text-green-600 mb-2 border-b pb-1 text-sm uppercase">Límites de Presupuesto</h4>
-                    <div id="lista-presupuestos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                        <p class="text-gray-500 italic text-sm">Cargando presupuestos...</p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- CONTENEDOR 2: GRÁFICAS PARALELAS (Oculto por defecto) -->
-            <div id="vista-grafica" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
-                <!-- Gráfica 1: Distribución de Gastos -->
-                <div class="flex flex-col items-center">
-                    <h4 class="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">Gastos por Categoría</h4>
-                    <div class="w-full max-w-xs h-64 relative">
-                        <canvas id="canvasGraficaGastos"></canvas>
+                    <!-- CONTENEDOR 1: LISTA DE HISTORIAL -->
+                    <div id="vista-lista" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Columna de Gastos -->
+                        <div>
+                            <h4 class="font-bold text-rose-600 mb-3 text-xs uppercase tracking-wider flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Gastos Procesados
+                            </h4>
+                            <div id="lista-gastos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-1">
+                                <p class="text-slate-400 italic text-xs">Cargando gastos...</p>
+                            </div>
+                        </div>
+                        <!-- Columna de Presupuestos -->
+                        <div>
+                            <h4 class="font-bold text-emerald-600 mb-3 text-xs uppercase tracking-wider flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Límites Fijados
+                            </h4>
+                            <div id="lista-presupuestos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-1">
+                                <p class="text-slate-400 italic text-xs">Cargando presupuestos...</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <!-- Gráfica 2: Presupuestos vs Gastos por Periodo -->
-                <div class="flex flex-col items-center">
-                    <h4 class="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">Presupuesto vs Gasto Real</h4>
-                    <div class="w-full max-w-sm h-64 relative">
-                        <canvas id="canvasGraficaPresupuesto"></canvas>
+
+                    <!-- CONTENEDOR 2: GRÁFICAS PARALELAS (Oculto por defecto) -->
+                    <div id="vista-grafica" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 py-4">
+                        <!-- Gráfica 1: Distribución de Gastos -->
+                        <div class="flex flex-col items-center">
+                            <h4 class="font-bold text-slate-500 mb-4 text-xs uppercase tracking-wider">Gastos por Categoría</h4>
+                            <div class="w-full max-w-xs h-60 relative">
+                                <canvas id="canvasGraficaGastos"></canvas>
+                            </div>
+                        </div>
+                        <!-- Gráfica 2: Presupuestos vs Gastos por Periodo -->
+                        <div class="flex flex-col items-center">
+                            <h4 class="font-bold text-slate-500 mb-4 text-xs uppercase tracking-wider">Límites vs Gasto Real</h4>
+                            <div class="w-full max-w-sm h-60 relative">
+                                <canvas id="canvasGraficaPresupuesto"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- CONEXIÓN JAVASCRIPT CON API GATEWAY Y MANEJO DE VISTAS -->
@@ -249,6 +308,71 @@
         let datosPresupuestos = [];
         let instGraficaGastos = null;
         let instGraficaPresupuesto = null;
+
+        // --- SISTEMA DE PESTAÑAS (TABS) DE FORMULARIOS ---
+        const tabBtnGasto = document.getElementById('tab-btn-gasto');
+        const tabBtnPresupuesto = document.getElementById('tab-btn-presupuesto');
+        const formGasto = document.getElementById('form-gasto');
+        const formPresupuesto = document.getElementById('form-presupuesto');
+
+        tabBtnGasto.addEventListener('click', () => {
+            // Estilos del botón activo
+            tabBtnGasto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 bg-white text-rose-600 shadow-sm flex justify-center items-center gap-2";
+            tabBtnGasto.querySelector('span').className = "w-2 h-2 rounded-full bg-rose-500";
+            
+            // Estilos del botón inactivo
+            tabBtnPresupuesto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 text-slate-500 hover:text-slate-800 flex justify-center items-center gap-2";
+            tabBtnPresupuesto.querySelector('span').className = "w-2 h-2 rounded-full bg-transparent";
+
+            // Mostrar/Ocultar Formularios
+            formGasto.classList.remove('hidden');
+            formPresupuesto.classList.add('hidden');
+        });
+
+        tabBtnPresupuesto.addEventListener('click', () => {
+            // Estilos del botón activo
+            tabBtnPresupuesto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm flex justify-center items-center gap-2";
+            tabBtnPresupuesto.querySelector('span').className = "w-2 h-2 rounded-full bg-emerald-500";
+            
+            // Estilos del botón inactivo
+            tabBtnGasto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 text-slate-500 hover:text-slate-800 flex justify-center items-center gap-2";
+            tabBtnGasto.querySelector('span').className = "w-2 h-2 rounded-full bg-transparent";
+
+            // Mostrar/Ocultar Formularios
+            formPresupuesto.classList.remove('hidden');
+            formGasto.classList.add('hidden');
+        });
+
+
+        // --- SISTEMA DE PESTAÑAS (TABS) PARA VISUALIZACIÓN ---
+        const btnSwitchLista = document.getElementById('btn-switch-lista');
+        const btnSwitchGrafica = document.getElementById('btn-switch-grafica');
+        const contenedorLista = document.getElementById('vista-lista');
+        const contenedorGrafica = document.getElementById('vista-grafica');
+        const tituloSeccion = document.getElementById('titulo-seccion');
+
+        function cambiarVista(vista) {
+            if (vista === 'lista') {
+                btnSwitchLista.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs";
+                btnSwitchGrafica.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
+                contenedorLista.classList.remove('hidden');
+                contenedorGrafica.classList.add('hidden');
+                tituloSeccion.innerText = 'Historial de Transacciones';
+                vistaActual = 'lista';
+            } else {
+                btnSwitchGrafica.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs";
+                btnSwitchLista.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
+                contenedorLista.classList.add('hidden');
+                contenedorGrafica.classList.remove('hidden');
+                tituloSeccion.innerText = 'Distribución Visual de Recursos';
+                vistaActual = 'grafica';
+                actualizarResumen(); // Regenera gráficas con datos actualizados
+            }
+        }
+
+        btnSwitchLista.addEventListener('click', () => cambiarVista('lista'));
+        btnSwitchGrafica.addEventListener('click', () => cambiarVista('grafica'));
+
 
         // Función para cargar los datos e indicadores en tiempo real (GET)
         async function actualizarResumen() {
@@ -274,7 +398,7 @@
                     else if (p.Tipo === 'Anual') presAnual += monto;
                 });
 
-                // 2. Procesar Gastos (Soporta compatibilidad si un gasto viejo no tiene 'Periodo')
+                // 2. Procesar Gastos
                 datosGastos.forEach(g => {
                     const monto = parseFloat(g.Monto || 0);
                     gasTotal += monto;
@@ -291,20 +415,20 @@
                 const balAnual = presAnual - gasAnual;
 
                 // --- 🖥️ ACTUALIZAR ELEMENTOS DE LA INTERFAZ ---
-                document.getElementById('total-presupuesto').innerText = `$${presTotal.toFixed(2)}`;
-                document.getElementById('total-gastos').innerText = `-$${gasTotal.toFixed(2)}`;
+                document.getElementById('total-presupuesto').innerText = `$${presTotal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
+                document.getElementById('total-gastos').innerText = `-$${gasTotal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
                 actualizarEstiloBalance('balance-actual', balTotal);
 
-                document.getElementById('semanal-presupuesto').innerText = `$${presSemanal.toFixed(2)}`;
-                document.getElementById('semanal-gastos').innerText = `-$${gasSemanal.toFixed(2)}`;
+                document.getElementById('semanal-presupuesto').innerText = `$${presSemanal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
+                document.getElementById('semanal-gastos').innerText = `-$${gasSemanal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
                 actualizarEstiloBalance('semanal-balance', balSemanal);
 
-                document.getElementById('mensual-presupuesto').innerText = `$${presMensual.toFixed(2)}`;
-                document.getElementById('mensual-gastos').innerText = `-$${gasMensual.toFixed(2)}`;
+                document.getElementById('mensual-presupuesto').innerText = `$${presMensual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
+                document.getElementById('mensual-gastos').innerText = `-$${gasMensual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
                 actualizarEstiloBalance('mensual-balance', balMensual);
 
-                document.getElementById('anual-presupuesto').innerText = `$${presAnual.toFixed(2)}`;
-                document.getElementById('anual-gastos').innerText = `-$${gasAnual.toFixed(2)}`;
+                document.getElementById('anual-presupuesto').innerText = `$${presAnual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
+                document.getElementById('anual-gastos').innerText = `-$${gasAnual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
                 actualizarEstiloBalance('anual-balance', balAnual);
 
                 renderizarListas();
@@ -321,11 +445,11 @@
         // Auxiliar para colorear dinámicamente los balances
         function actualizarEstiloBalance(idElemento, balance) {
             const el = document.getElementById(idElemento);
-            el.innerText = `$${balance.toFixed(2)}`;
+            el.innerText = `$${balance.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
             if (balance < 0) {
-                el.className = "font-bold text-red-600 text-sm";
+                el.className = "text-sm font-extrabold text-rose-600";
             } else {
-                el.className = "font-bold text-green-600 text-sm";
+                el.className = "text-sm font-extrabold text-emerald-600";
             }
         }
 
@@ -336,24 +460,26 @@
 
             // Renderizar lista de Gastos
             if (datosGastos.length === 0) {
-                contenedorGastos.innerHTML = `<p class="text-gray-500 italic text-sm">No hay gastos guardados.</p>`;
+                contenedorGastos.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 text-center">
+                        <p class="text-slate-400 italic text-xs">No hay gastos guardados.</p>
+                    </div>`;
             } else {
                 contenedorGastos.innerHTML = datosGastos.map(g => `
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs relative pr-8">
-                        <div>
-                            <p class="font-semibold text-gray-800 text-sm">${g.Nombre}</p>
-                            <div class="flex gap-1.5 items-center mt-1">
-                                <span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">${g.Tipo}</span>
-                                <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">${g.Periodo || 'Mensual'}</span>
-                                <span class="text-[10px] text-gray-400">${g.Fecha}</span>
+                    <div class="group bg-slate-50 hover:bg-slate-100 p-3.5 rounded-xl border border-slate-100 flex justify-between items-center transition-all relative pr-10 shadow-xs">
+                        <div class="space-y-1">
+                            <p class="font-bold text-slate-800 text-xs tracking-tight">${g.Nombre}</p>
+                            <div class="flex flex-wrap gap-1 items-center">
+                                <span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">${g.Tipo}</span>
+                                <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">${g.Periodo || 'Mensual'}</span>
+                                <span class="text-[9px] font-medium text-slate-400 ml-1">${g.Fecha}</span>
                             </div>
-                            ${g.Detalle ? `<p class="text-xs text-gray-400 italic mt-1.5">"${g.Detalle}"</p>` : ''}
+                            ${g.Detalle ? `<p class="text-[10px] text-slate-400 italic mt-1 bg-white border border-slate-100/80 rounded px-1.5 py-0.5 inline-block">"${g.Detalle}"</p>` : ''}
                         </div>
-                        <div class="flex items-center">
-                            <span class="font-bold text-red-600 text-sm">-$${parseFloat(g.Monto).toFixed(2)}</span>
-                        </div>
-                        <button onclick="eliminarGasto('${g.id_gasto}')" class="absolute top-1.5 right-2.5 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Gasto">
-                            &times;
+                        <span class="font-extrabold text-rose-600 text-xs">-$${parseFloat(g.Monto).toFixed(2)}</span>
+                        
+                        <button onclick="eliminarGasto('${g.id_gasto}')" class="absolute right-3.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-600 transition-all duration-150 p-1 rounded-md hover:bg-rose-50" title="Eliminar Gasto">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         </button>
                     </div>
                 `).join('');
@@ -361,20 +487,25 @@
 
             // Renderizar lista de Presupuestos
             if (datosPresupuestos.length === 0) {
-                contenedorPresupuestos.innerHTML = `<p class="text-gray-500 italic text-sm">No hay presupuestos establecidos.</p>`;
+                contenedorPresupuestos.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 text-center">
+                        <p class="text-slate-400 italic text-xs">No hay presupuestos fijados.</p>
+                    </div>`;
             } else {
                 contenedorPresupuestos.innerHTML = datosPresupuestos.map(p => `
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs relative pr-8">
-                        <div>
-                            <p class="font-semibold text-gray-800 text-sm">${p.Nombre}</p>
-                            <p class="text-xs text-gray-500 mt-1">${p.Fecha} • <span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${p.Tipo}</span></p>
-                            ${p.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${p.Detalle}"</p>` : ''}
+                    <div class="group bg-slate-50 hover:bg-slate-100 p-3.5 rounded-xl border border-slate-100 flex justify-between items-center transition-all relative pr-10 shadow-xs">
+                        <div class="space-y-1">
+                            <p class="font-bold text-slate-800 text-xs tracking-tight">${p.Nombre}</p>
+                            <div class="flex flex-wrap gap-1 items-center">
+                                <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">${p.Tipo}</span>
+                                <span class="text-[9px] font-medium text-slate-400 ml-1">${p.Fecha}</span>
+                            </div>
+                            ${p.Detalle ? `<p class="text-[10px] text-slate-400 italic mt-1 bg-white border border-slate-100/80 rounded px-1.5 py-0.5 inline-block">"${p.Detalle}"</p>` : ''}
                         </div>
-                        <div class="flex items-center">
-                            <span class="font-bold text-green-600 text-sm">+$${parseFloat(p.Monto).toFixed(2)}</span>
-                        </div>
-                        <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="absolute top-1.5 right-2.5 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Presupuesto">
-                            &times;
+                        <span class="font-extrabold text-emerald-600 text-xs">+$${parseFloat(p.Monto).toFixed(2)}</span>
+                        
+                        <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="absolute right-3.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-600 transition-all duration-150 p-1 rounded-md hover:bg-rose-50" title="Eliminar Presupuesto">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         </button>
                     </div>
                 `).join('');
@@ -389,7 +520,6 @@
                     method: 'DELETE'
                 });
                 if (response.ok) {
-                    alert('Gasto eliminado exitosamente');
                     actualizarResumen();
                 } else {
                     const errData = await response.json();
@@ -408,7 +538,6 @@
                     method: 'DELETE'
                 });
                 if (response.ok) {
-                    alert('Presupuesto eliminado exitosamente');
                     actualizarResumen();
                 } else {
                     const errData = await response.json();
@@ -421,7 +550,6 @@
 
         // Función para renderizar las dos gráficas simultáneamente
         function renderizarGraficas(presS, presM, presA, gasS, gasM, gasA) {
-            // Destruir instancias previas si existen
             if (instGraficaGastos) instGraficaGastos.destroy();
             if (instGraficaPresupuesto) instGraficaPresupuesto.destroy();
 
@@ -440,15 +568,16 @@
                     labels: Object.keys(catValores),
                     datasets: [{
                         data: Object.values(catValores),
-                        backgroundColor: ['#EF4444', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899'],
-                        borderWidth: 1
+                        backgroundColor: ['#f43f5e', '#3b82f6', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#64748b'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { font: { size: 10 } } }
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, family: 'Plus Jakarta Sans' } } }
                     }
                 }
             });
@@ -463,16 +592,16 @@
                         {
                             label: 'Límite Presupuestado',
                             data: [presS, presM, presA],
-                            backgroundColor: '#10B981',
-                            borderColor: '#059669',
-                            borderWidth: 1
+                            backgroundColor: '#10b981',
+                            borderRadius: 6,
+                            borderWidth: 0
                         },
                         {
                             label: 'Gasto Realizado',
                             data: [gasS, gasM, gasA],
-                            backgroundColor: '#EF4444',
-                            borderColor: '#DC2626',
-                            borderWidth: 1
+                            backgroundColor: '#f43f5e',
+                            borderRadius: 6,
+                            borderWidth: 0
                         }
                     ]
                 },
@@ -482,49 +611,28 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { font: { size: 10 } }
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { size: 9, family: 'Plus Jakarta Sans' } }
                         },
                         x: {
-                            ticks: { font: { size: 10 } }
+                            grid: { display: false },
+                            ticks: { font: { size: 10, family: 'Plus Jakarta Sans' } }
                         }
                     },
                     plugins: {
-                        legend: { position: 'bottom', labels: { font: { size: 10 } } }
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, family: 'Plus Jakarta Sans' } } }
                     }
                 }
             });
         }
 
-        // Alternador de Vistas
-        document.getElementById('btn-toggle-vista').addEventListener('click', () => {
-            const contenedorLista = document.getElementById('vista-lista');
-            const contenedorGrafica = document.getElementById('vista-grafica');
-            const boton = document.getElementById('btn-toggle-vista');
-            const titulo = document.getElementById('titulo-seccion');
-
-            if (vistaActual === 'lista') {
-                contenedorLista.classList.add('hidden');
-                contenedorGrafica.classList.remove('hidden');
-                boton.innerText = 'Ver Listado de Registros';
-                titulo.innerText = 'Distribución Visual de Recursos';
-                vistaActual = 'grafica';
-                actualizarResumen(); // Dispara la recreación de las gráficas
-            } else {
-                contenedorLista.classList.remove('hidden');
-                contenedorGrafica.classList.add('hidden');
-                boton.innerText = 'Ver Gráficas y Distribución';
-                titulo.innerText = 'Historial de Transacciones';
-                vistaActual = 'lista';
-            }
-        });
-
-        // Evento POST: Guardar Gasto (Envia campo 'Periodo' a tu Lambda)
+        // Evento POST: Guardar Gasto
         document.getElementById('form-gasto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
                 Nombre: document.getElementById('gasto-nombre').value,
                 Tipo: document.getElementById('gasto-tipo').value,
-                Periodo: document.getElementById('gasto-periodo').value, // 🆕 NUEVO CAMPO ENVIADO
+                Periodo: document.getElementById('gasto-periodo').value, 
                 Monto: parseFloat(document.getElementById('gasto-monto').value),
                 Fecha: document.getElementById('gasto-fecha').value,
                 Detalle: document.getElementById('gasto-detalle').value
@@ -537,7 +645,6 @@
                     body: JSON.stringify(payload)
                 });
                 if (response.ok) {
-                    alert('¡Gasto guardado exitosamente!');
                     document.getElementById('form-gasto').reset();
                     actualizarResumen();
                 }
@@ -564,7 +671,6 @@
                     body: JSON.stringify(payload)
                 });
                 if (response.ok) {
-                    alert('¡Presupuesto establecido exitosamente!');
                     document.getElementById('form-presupuesto').reset();
                     actualizarResumen();
                 }
@@ -573,7 +679,13 @@
             }
         });
 
-        window.onload = actualizarResumen;
+        window.onload = () => {
+            // Inicializar fecha de los formularios con el día de hoy
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('gasto-fecha').value = hoy;
+            document.getElementById('pres-fecha').value = hoy;
+            actualizarResumen();
+        };
     </script>
 </body>
 </html>
