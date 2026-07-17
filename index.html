@@ -9,7 +9,7 @@
     <!-- Chart.js para renderizar las gráficas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
@@ -32,6 +32,9 @@
             <span class="text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1.5 rounded-full uppercase tracking-wider">Proyecto Semestral</span>
         </div>
     </nav>
+
+    <!-- CONTENEDOR FLOTANTE PARA TOASTS -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
     <div class="container mx-auto px-4 md:px-6 mt-8 max-w-7xl">
         
@@ -309,6 +312,41 @@
         let instGraficaGastos = null;
         let instGraficaPresupuesto = null;
 
+        // --- SISTEMA DE TOAST NOTIFICATIONS ---
+        function mostrarToast(mensaje, tipo = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Selección del color y el icono del Toast según el tipo de respuesta
+            const bgClass = tipo === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+            const icon = tipo === 'success' 
+                ? `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0"/></svg>`
+                : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+
+            // Clases para animación de entrada flotante
+            toast.className = `flex items-center gap-3 ${bgClass} text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-8 opacity-0 transition-all duration-300 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `
+                ${icon}
+                <span class="text-xs font-semibold">${mensaje}</span>
+            `;
+
+            container.appendChild(toast);
+
+            // Activación de la animación de entrada
+            setTimeout(() => {
+                toast.classList.remove('translate-y-8', 'opacity-0');
+            }, 10);
+
+            // Animación de salida y auto-eliminación después de 3 segundos
+            setTimeout(() => {
+                toast.classList.add('translate-y-8', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+
         // --- SISTEMA DE PESTAÑAS (TABS) DE FORMULARIOS ---
         const tabBtnGasto = document.getElementById('tab-btn-gasto');
         const tabBtnPresupuesto = document.getElementById('tab-btn-presupuesto');
@@ -316,29 +354,23 @@
         const formPresupuesto = document.getElementById('form-presupuesto');
 
         tabBtnGasto.addEventListener('click', () => {
-            // Estilos del botón activo
             tabBtnGasto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 bg-white text-rose-600 shadow-sm flex justify-center items-center gap-2";
             tabBtnGasto.querySelector('span').className = "w-2 h-2 rounded-full bg-rose-500";
             
-            // Estilos del botón inactivo
             tabBtnPresupuesto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 text-slate-500 hover:text-slate-800 flex justify-center items-center gap-2";
             tabBtnPresupuesto.querySelector('span').className = "w-2 h-2 rounded-full bg-transparent";
 
-            // Mostrar/Ocultar Formularios
             formGasto.classList.remove('hidden');
             formPresupuesto.classList.add('hidden');
         });
 
         tabBtnPresupuesto.addEventListener('click', () => {
-            // Estilos del botón activo
             tabBtnPresupuesto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm flex justify-center items-center gap-2";
             tabBtnPresupuesto.querySelector('span').className = "w-2 h-2 rounded-full bg-emerald-500";
             
-            // Estilos del botón inactivo
             tabBtnGasto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 text-slate-500 hover:text-slate-800 flex justify-center items-center gap-2";
             tabBtnGasto.querySelector('span').className = "w-2 h-2 rounded-full bg-transparent";
 
-            // Mostrar/Ocultar Formularios
             formPresupuesto.classList.remove('hidden');
             formGasto.classList.add('hidden');
         });
@@ -366,7 +398,7 @@
                 contenedorGrafica.classList.remove('hidden');
                 tituloSeccion.innerText = 'Distribución Visual de Recursos';
                 vistaActual = 'grafica';
-                actualizarResumen(); // Regenera gráficas con datos actualizados
+                actualizarResumen(); 
             }
         }
 
@@ -385,7 +417,7 @@
                 datosGastos = data.lista_gastos || [];
                 datosPresupuestos = data.lista_presupuestos || [];
 
-                // --- 🧮 CÁLCULO DE INDICADORES EN EL FRONTEND ---
+                // --- CÁLCULO DE INDICADORES EN EL FRONTEND ---
                 let presTotal = 0, presSemanal = 0, presMensual = 0, presAnual = 0;
                 let gasTotal = 0, gasSemanal = 0, gasMensual = 0, gasAnual = 0;
 
@@ -414,7 +446,7 @@
                 const balMensual = presMensual - gasMensual;
                 const balAnual = presAnual - gasAnual;
 
-                // --- 🖥️ ACTUALIZAR ELEMENTOS DE LA INTERFAZ ---
+                // --- ACTUALIZAR ELEMENTOS DE LA INTERFAZ ---
                 document.getElementById('total-presupuesto').innerText = `$${presTotal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
                 document.getElementById('total-gastos').innerText = `-$${gasTotal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
                 actualizarEstiloBalance('balance-actual', balTotal);
@@ -521,12 +553,13 @@
                 });
                 if (response.ok) {
                     actualizarResumen();
+                    mostrarToast('Gasto eliminado correctamente', 'success');
                 } else {
                     const errData = await response.json();
-                    alert(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`);
+                    mostrarToast(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`, 'error');
                 }
             } catch (err) {
-                alert('No se pudo comunicar con el servidor para eliminar.');
+                mostrarToast('No se pudo comunicar con el servidor.', 'error');
             }
         }
 
@@ -539,12 +572,13 @@
                 });
                 if (response.ok) {
                     actualizarResumen();
+                    mostrarToast('Límite de presupuesto eliminado', 'success');
                 } else {
                     const errData = await response.json();
-                    alert(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`);
+                    mostrarToast(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`, 'error');
                 }
             } catch (err) {
-                alert('No se pudo comunicar con el servidor para eliminar.');
+                mostrarToast('No se pudo comunicar con el servidor.', 'error');
             }
         }
 
@@ -646,10 +680,18 @@
                 });
                 if (response.ok) {
                     document.getElementById('form-gasto').reset();
+                    // Restaurar fecha a la de hoy por comodidad
+                    document.getElementById('gasto-fecha').value = new Date().toISOString().split('T')[0];
                     actualizarResumen();
+                    
+                    // Notificación de éxito flotante
+                    mostrarToast('¡Gasto registrado con éxito!', 'success');
+                } else {
+                    const errData = await response.json();
+                    mostrarToast(`Error: ${errData.error || 'No se pudo registrar'}`, 'error');
                 }
             } catch (err) {
-                alert('Error al conectar con API Gateway');
+                mostrarToast('Error al conectar con API Gateway', 'error');
             }
         });
 
@@ -672,10 +714,17 @@
                 });
                 if (response.ok) {
                     document.getElementById('form-presupuesto').reset();
+                    document.getElementById('pres-fecha').value = new Date().toISOString().split('T')[0];
                     actualizarResumen();
+                    
+                    // Notificación de éxito para límites establecidos
+                    mostrarToast('¡Límite de presupuesto definido!', 'success');
+                } else {
+                    const errData = await response.json();
+                    mostrarToast(`Error: ${errData.error || 'No se pudo establecer'}`, 'error');
                 }
             } catch (err) {
-                alert('Error al conectar con API Gateway');
+                mostrarToast('Error al conectar con API Gateway', 'error');
             }
         });
 
