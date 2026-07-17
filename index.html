@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Presupuestario - ISF-251</title>
+    <!-- Tailwind CSS para diseño rápido y moderno -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para renderizar la gráfica redonda -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
 
+    <!-- Barra de navegación -->
     <nav class="bg-blue-600 text-white p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold">Sistema de Control Presupuestario</h1>
@@ -18,6 +21,7 @@
 
     <div class="container mx-auto p-6 max-w-6xl">
         
+        <!-- SECCIÓN 1: INDICADORES EN TIEMPO REAL -->
         <h2 class="text-lg font-bold text-gray-700 mb-4">Indicadores de Toma de Decisiones</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white p-5 rounded-lg shadow-sm border-l-4 border-blue-500">
@@ -39,6 +43,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- SECCIÓN 2: FORMULARIO DE GASTOS -->
             <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-lg font-bold text-red-600 mb-4 border-b pb-2">Registrar Nuevo Gasto</h3>
                 <form id="form-gasto" class="space-y-4">
@@ -73,6 +78,7 @@
                 </form>
             </div>
 
+            <!-- SECCIÓN 3: FORMULARIO DE PRESUPUESTOS -->
             <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-lg font-bold text-green-600 mb-4 border-b pb-2">Establecer Presupuesto</h3>
                 <form id="form-presupuesto" class="space-y-4">
@@ -107,6 +113,7 @@
             </div>
         </div>
 
+        <!-- SECCIÓN DE VISUALIZACIÓN DINÁMICA -->
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div class="flex justify-between items-center border-b pb-4 mb-4">
                 <h3 id="titulo-seccion" class="text-lg font-bold text-gray-700">Historial de Transacciones</h3>
@@ -115,13 +122,16 @@
                 </button>
             </div>
 
+            <!-- CONTENEDOR 1: LISTA DE HISTORIAL (Vista por defecto) -->
             <div id="vista-lista" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Columna de Gastos -->
                 <div>
                     <h4 class="font-bold text-red-600 mb-2 border-b pb-1 text-sm uppercase">Detalle de Gastos</h4>
                     <div id="lista-gastos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-2">
                         <p class="text-gray-500 italic text-sm">Cargando gastos...</p>
                     </div>
                 </div>
+                <!-- Columna de Presupuestos -->
                 <div>
                     <h4 class="font-bold text-green-600 mb-2 border-b pb-1 text-sm uppercase">Límites de Presupuesto</h4>
                     <div id="lista-presupuestos-contenedor" class="space-y-3 max-h-96 overflow-y-auto pr-2">
@@ -130,6 +140,7 @@
                 </div>
             </div>
 
+            <!-- CONTENEDOR 2: GRÁFICA REDONDA (Oculta por defecto) -->
             <div id="vista-grafica" class="hidden flex flex-col items-center justify-center py-6">
                 <div class="w-full max-w-md h-80 relative">
                     <canvas id="canvasGrafica"></canvas>
@@ -139,15 +150,16 @@
 
     </div>
 
+    <!-- CONEXIÓN JAVASCRIPT CON API GATEWAY Y MANEJO DE VISTAS -->
     <script>
         // 🚨 CONFIGURACIÓN: Reemplaza esto con la URL de tu API Gateway
-        const API_BASE_URL = 'https://us54vdx1if.execute-api.us-east-1.amazonaws.com/dev'; 
+        const API_BASE_URL = 'TU_URL_DE_API_GATEWAY'; 
 
         // Variables Globales de Estado
-        let vistaActual = 'lista'; // 'lista' o 'grafica'
+        let vistaActual = 'lista';
         let datosGastos = [];
         let datosPresupuestos = [];
-        let miGraficaInstancia = null; // Instancia de Chart.js para poder destruirla/actualizarla
+        let miGraficaInstancia = null;
 
         // Función para cargar los datos e indicadores en tiempo real (GET)
         async function actualizarResumen() {
@@ -158,11 +170,9 @@
                 const data = await response.json();
                 const ind = data.indicadores;
 
-                // Almacenar datos en el estado global
                 datosGastos = data.lista_gastos || [];
                 datosPresupuestos = data.lista_presupuestos || [];
 
-                // 1. Actualizar tarjetas superiores
                 document.getElementById('total-presupuesto').innerText = `$${parseFloat(ind.total_presupuesto || 0).toFixed(2)}`;
                 document.getElementById('total-gastos').innerText = `$${parseFloat(ind.total_gastos || 0).toFixed(2)}`;
                 
@@ -170,14 +180,12 @@
                 const balanceEl = document.getElementById('balance-actual');
                 balanceEl.innerText = `$${balance.toFixed(2)}`;
 
-                // Color dinámico según el saldo
                 if (balance < 0) {
                     balanceEl.className = "text-2xl font-bold text-red-600";
                 } else {
                     balanceEl.className = "text-2xl font-bold text-green-600";
                 }
 
-                // Actualizar etiqueta del estado de flujo
                 const estadoEl = document.getElementById('estado-presupuesto');
                 estadoEl.innerText = ind.estado_presupuesto;
                 
@@ -189,10 +197,8 @@
                     estadoEl.className = "w-max px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800";
                 }
 
-                // 2. Renderizar listas de transacciones
                 renderizarListas();
 
-                // 3. Si la vista actual es la gráfica, actualizarla en tiempo real
                 if (vistaActual === 'grafica') {
                     renderizarGrafica();
                 }
@@ -202,7 +208,7 @@
             }
         }
 
-        // Función para renderizar las transacciones en formato de lista
+        // Función para renderizar las transacciones en formato de lista (CON BOTÓN ELIMINAR)
         function renderizarListas() {
             const contenedorGastos = document.getElementById('lista-gastos-contenedor');
             const contenedorPresupuestos = document.getElementById('lista-presupuestos-contenedor');
@@ -218,8 +224,12 @@
                             <p class="text-xs text-gray-500">${g.Fecha} • <span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${g.Tipo}</span></p>
                             ${g.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${g.Detalle}"</p>` : ''}
                         </div>
-                        <div class="text-right">
+                        <div class="flex items-center gap-4">
                             <span class="font-bold text-red-600 text-sm">-$${parseFloat(g.Monto).toFixed(2)}</span>
+                            <!-- Botón Eliminar Gasto -->
+                            <button onclick="eliminarGasto('${g.id_gasto}')" class="text-red-500 hover:text-red-700 font-bold transition duration-150 p-1 hover:bg-red-50 rounded" title="Eliminar Gasto">
+                                🗑️
+                            </button>
                         </div>
                     </div>
                 `).join('');
@@ -236,11 +246,57 @@
                             <p class="text-xs text-gray-500">${p.Fecha} • <span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${p.Tipo}</span></p>
                             ${p.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${p.Detalle}"</p>` : ''}
                         </div>
-                        <div class="text-right">
+                        <div class="flex items-center gap-4">
                             <span class="font-bold text-green-600 text-sm">+$${parseFloat(p.Monto).toFixed(2)}</span>
+                            <!-- Botón Eliminar Presupuesto -->
+                            <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="text-red-500 hover:text-red-700 font-bold transition duration-150 p-1 hover:bg-red-50 rounded" title="Eliminar Presupuesto">
+                                🗑️
+                            </button>
                         </div>
                     </div>
                 `).join('');
+            }
+        }
+
+        // NUEVA FUNCIÓN: Llamar API DELETE para Gastos
+        async function eliminarGasto(idGasto) {
+            if (!confirm('¿Estás seguro de que deseas eliminar este gasto?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/gasto?id_gasto=${idGasto}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('Gasto eliminado exitosamente');
+                    actualizarResumen(); // Recargar datos y recalcular indicadores en caliente
+                } else {
+                    const errData = await response.json();
+                    alert(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`);
+                }
+            } catch (err) {
+                alert('No se pudo comunicar con el servidor para eliminar.');
+            }
+        }
+
+        // NUEVA FUNCIÓN: Llamar API DELETE para Presupuestos
+        async function eliminarPresupuesto(idPresupuesto) {
+            if (!confirm('¿Estás seguro de que deseas eliminar este presupuesto?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/presupuesto?id_presupuesto=${idPresupuesto}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Presupuesto eliminado exitosamente');
+                    actualizarResumen();
+                } else {
+                    const errData = await response.json();
+                    alert(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`);
+                }
+            } catch (err) {
+                alert('No se pudo comunicar con el servidor para eliminar.');
             }
         }
 
@@ -248,7 +304,6 @@
         function renderizarGrafica() {
             const ctx = document.getElementById('canvasGrafica').getContext('2d');
 
-            // Destruir instancia previa para evitar que se encimen las gráficas
             if (miGraficaInstancia) {
                 miGraficaInstancia.destroy();
             }
@@ -261,7 +316,6 @@
                 return;
             }
 
-            // Agrupar gastos por "Tipo" (Categoría) para la segmentación
             const categoriasValores = {};
             datosGastos.forEach(g => {
                 const categoria = g.Tipo || 'Otros';
@@ -272,7 +326,6 @@
             const etiquetas = Object.keys(categoriasValores);
             const valores = Object.values(categoriasValores);
 
-            // Generar gráfica circular
             miGraficaInstancia = new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -280,12 +333,7 @@
                     datasets: [{
                         data: valores,
                         backgroundColor: [
-                            '#EF4444', // Red-500
-                            '#3B82F6', // Blue-500
-                            '#F59E0B', // Amber-500
-                            '#10B981', // Emerald-500
-                            '#8B5CF6', // Violet-500
-                            '#EC4899'  // Pink-500
+                            '#EF4444', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899'
                         ],
                         borderWidth: 1
                     }]
@@ -296,18 +344,14 @@
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: {
-                                font: {
-                                    size: 12
-                                }
-                            }
+                            labels: { font: { size: 12 } }
                         }
                     }
                 }
             });
         }
 
-        // Escuchar el evento de click en el botón de cambio de vista
+        // Alternador de Vistas
         document.getElementById('btn-toggle-vista').addEventListener('click', () => {
             const contenedorLista = document.getElementById('vista-lista');
             const contenedorGrafica = document.getElementById('vista-grafica');
@@ -315,15 +359,13 @@
             const titulo = document.getElementById('titulo-seccion');
 
             if (vistaActual === 'lista') {
-                // Cambiar a gráfica
                 contenedorLista.classList.add('hidden');
                 contenedorGrafica.classList.remove('hidden');
                 boton.innerText = 'Ver Listado de Registros';
                 titulo.innerText = 'Análisis de Distribución de Gastos';
                 vistaActual = 'grafica';
-                renderizarGrafica(); // Renderizar al cambiar
+                renderizarGrafica();
             } else {
-                // Cambiar a lista
                 contenedorLista.classList.remove('hidden');
                 contenedorGrafica.classList.add('hidden');
                 boton.innerText = 'Ver Distribución de Gastos (Gráfica)';
@@ -332,7 +374,7 @@
             }
         });
 
-        // Manejar el envío del formulario de GASTOS (POST)
+        // Formularios POST
         document.getElementById('form-gasto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
@@ -352,14 +394,13 @@
                 if (response.ok) {
                     alert('¡Gasto guardado en DynamoDB exitosamente!');
                     document.getElementById('form-gasto').reset();
-                    actualizarResumen(); // Actualiza los datos y la vista en vivo
+                    actualizarResumen();
                 }
             } catch (err) {
                 alert('Error al conectar con API Gateway');
             }
         });
 
-        // Manejar el envío del formulario de PRESUPUESTOS (POST)
         document.getElementById('form-presupuesto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
@@ -379,14 +420,13 @@
                 if (response.ok) {
                     alert('¡Presupuesto establecido exitosamente!');
                     document.getElementById('form-presupuesto').reset();
-                    actualizarResumen(); // Actualiza los datos y la vista en vivo
+                    actualizarResumen();
                 }
             } catch (err) {
                 alert('Error al conectar con API Gateway');
             }
         });
 
-        // Al cargar la página, traer datos inmediatamente
         window.onload = actualizarResumen;
     </script>
 </body>
