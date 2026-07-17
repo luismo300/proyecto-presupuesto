@@ -208,7 +208,7 @@
             }
         }
 
-        // Función para renderizar las transacciones en formato de lista (CON BOTÓN ELIMINAR)
+        // Función para renderizar las transacciones en formato de lista (CON BOTÓN ELIMINAR X EN ESQUINA)
         function renderizarListas() {
             const contenedorGastos = document.getElementById('lista-gastos-contenedor');
             const contenedorPresupuestos = document.getElementById('lista-presupuestos-contenedor');
@@ -218,19 +218,19 @@
                 contenedorGastos.innerHTML = `<p class="text-gray-500 italic text-sm">No hay gastos guardados.</p>`;
             } else {
                 contenedorGastos.innerHTML = datosGastos.map(g => `
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs">
+                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs relative pr-8">
                         <div>
                             <p class="font-semibold text-gray-800 text-sm">${g.Nombre}</p>
                             <p class="text-xs text-gray-500">${g.Fecha} • <span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${g.Tipo}</span></p>
                             ${g.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${g.Detalle}"</p>` : ''}
                         </div>
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center">
                             <span class="font-bold text-red-600 text-sm">-$${parseFloat(g.Monto).toFixed(2)}</span>
-                            <!-- Botón Eliminar Gasto -->
-                            <button onclick="eliminarGasto('${g.id_gasto}')" class="text-red-500 hover:text-red-700 font-bold transition duration-150 p-1 hover:bg-red-50 rounded" title="Eliminar Gasto">
-                                🗑️
-                            </button>
                         </div>
+                        <!-- Botón Eliminar Gasto (X en esquina superior derecha) -->
+                        <button onclick="eliminarGasto('${g.id_gasto}')" class="absolute top-1 right-2 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Gasto">
+                            &times;
+                        </button>
                     </div>
                 `).join('');
             }
@@ -240,19 +240,19 @@
                 contenedorPresupuestos.innerHTML = `<p class="text-gray-500 italic text-sm">No hay presupuestos establecidos.</p>`;
             } else {
                 contenedorPresupuestos.innerHTML = datosPresupuestos.map(p => `
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs">
+                    <div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center shadow-xs relative pr-8">
                         <div>
                             <p class="font-semibold text-gray-800 text-sm">${p.Nombre}</p>
                             <p class="text-xs text-gray-500">${p.Fecha} • <span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase">${p.Tipo}</span></p>
                             ${p.Detalle ? `<p class="text-xs text-gray-400 italic mt-1">"${p.Detalle}"</p>` : ''}
                         </div>
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center">
                             <span class="font-bold text-green-600 text-sm">+$${parseFloat(p.Monto).toFixed(2)}</span>
-                            <!-- Botón Eliminar Presupuesto -->
-                            <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="text-red-500 hover:text-red-700 font-bold transition duration-150 p-1 hover:bg-red-50 rounded" title="Eliminar Presupuesto">
-                                🗑️
-                            </button>
                         </div>
+                        <!-- Botón Eliminar Presupuesto (X en esquina superior derecha) -->
+                        <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="absolute top-1 right-2 text-gray-400 hover:text-red-600 font-bold transition duration-150 text-xl leading-none focus:outline-none" title="Eliminar Presupuesto">
+                            &times;
+                        </button>
                     </div>
                 `).join('');
             }
