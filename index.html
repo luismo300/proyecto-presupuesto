@@ -15,6 +15,7 @@
         }
     </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
 
     <!-- Barra de navegación premium -->
@@ -29,20 +30,69 @@
                     <p class="text-xs text-slate-400">ISF-251 • Universidad Tecnológica</p>
                 </div>
             </div>
-            <span class="text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1.5 rounded-full uppercase tracking-wider">Proyecto Semestral</span>
+            <div class="flex items-center gap-6">
+                <!-- 1. Añadimos el ID 'contenedor-fecha' aquí -->
+
+                
+                <span class="text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1.5 rounded-full uppercase tracking-wider">Proyecto Semestral</span>
+            </div>
         </div>
     </nav>
 
     <!-- CONTENEDOR FLOTANTE PARA TOASTS -->
     <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+    
+    
 
     <div class="container mx-auto px-4 md:px-6 mt-8 max-w-7xl">
         
+<!-- Contenedor alineado a la izquierda -->
+<div class="flex justify-start mb-6">
+    <div id="contenedor-fecha" class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl transition-all cursor-pointer hover:border-indigo-500/50 hover:bg-slate-750 relative select-none">
+        <!-- Icono -->
+        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        
+        <!-- Texto de la fecha -->
+        <span id="fecha-actual" class="text-xs font-bold text-slate-300 uppercase tracking-wide">Hoy</span>
+        
+        <!-- Input invisible (posicionado sobre todo el contenedor) -->
+        <input type="date" id="cambiar-fecha-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+    </div>
+</div>
+                
         <!-- SECCIÓN 1: INDICADORES EN TIEMPO REAL -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mb-8 items-start">
+
+            <!-- HISTÓRICO TOTAL  -->
+        <div class="bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-700 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-historico')">
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Histórico Total</span>
+                <div class="p-1.5 bg-slate-700 rounded-lg text-white">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </div>
+            </div>
+            <div class="space-y-1">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-300">Balance:</span>
+                    <span id="historico-balance" class="text-lg font-bold text-white">$0.00</span>
+                </div>
+                <div id="detalles-historico" class="hidden flex-col gap-1 border-t border-slate-700 pt-2 mt-2">
+                    <div class="flex justify-between text-xs text-slate-400">
+                        <span>Total Presup.:</span>
+                        <span id="historico-presupuesto" class="font-semibold text-emerald-400">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-slate-400">
+                        <span>Total Gastado:</span>
+                        <span id="historico-gastos" class="font-semibold text-rose-400">-$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
             
             <!-- ACUMULADO TOTAL -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-general')">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Balance General</span>
                     <div class="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
@@ -50,23 +100,27 @@
                     </div>
                 </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Pág. Presupuestos:</span>
-                        <span id="total-presupuesto" class="font-semibold text-slate-800">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Gastos Cargados:</span>
-                        <span id="total-gastos" class="font-semibold text-rose-600">-$0.00</span>
-                    </div>
-                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                    <!-- Balance (Siempre visible) -->
+                    <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-slate-700">Balance:</span>
-                        <span id="balance-actual" class="text-sm font-bold text-slate-800">$0.00</span>
+                        <span id="balance-actual" class="text-lg font-bold text-slate-800">$0.00</span>
+                    </div>
+                    <!-- Detalles Ocultos -->
+                    <div id="detalles-general" class="hidden flex-col gap-1 border-t border-slate-100 pt-2 mt-2">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Pág. Presupuestos:</span>
+                            <span id="total-presupuesto" class="font-semibold text-slate-800">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Gastos Cargados:</span>
+                            <span id="total-gastos" class="font-semibold text-rose-600">-$0.00</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- PERIODO SEMANAL -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-semanal')">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Periodo Semanal</span>
                     <div class="p-1.5 bg-violet-50 rounded-lg text-violet-600">
@@ -74,23 +128,27 @@
                     </div>
                 </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Límite:</span>
-                        <span id="semanal-presupuesto" class="font-semibold text-slate-800">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Gastado:</span>
-                        <span id="semanal-gastos" class="font-semibold text-rose-600">-$0.00</span>
-                    </div>
-                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                    <!-- Balance (Siempre visible) -->
+                    <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-slate-700">Balance:</span>
-                        <span id="semanal-balance" class="text-sm font-bold text-slate-800">$0.00</span>
+                        <span id="semanal-balance" class="text-lg font-bold text-slate-800">$0.00</span>
+                    </div>
+                    <!-- Detalles Ocultos -->
+                    <div id="detalles-semanal" class="hidden flex-col gap-1 border-t border-slate-100 pt-2 mt-2">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Límite:</span>
+                            <span id="semanal-presupuesto" class="font-semibold text-slate-800">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Gastado:</span>
+                            <span id="semanal-gastos" class="font-semibold text-rose-600">-$0.00</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- PERIODO MENSUAL -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-mensual')">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Periodo Mensual</span>
                     <div class="p-1.5 bg-emerald-50 rounded-lg text-emerald-600">
@@ -98,23 +156,27 @@
                     </div>
                 </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Límite:</span>
-                        <span id="mensual-presupuesto" class="font-semibold text-slate-800">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Gastado:</span>
-                        <span id="mensual-gastos" class="font-semibold text-rose-600">-$0.00</span>
-                    </div>
-                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                    <!-- Balance (Siempre visible) -->
+                    <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-slate-700">Balance:</span>
-                        <span id="mensual-balance" class="text-sm font-bold text-slate-800">$0.00</span>
+                        <span id="mensual-balance" class="text-lg font-bold text-slate-800">$0.00</span>
+                    </div>
+                    <!-- Detalles Ocultos -->
+                    <div id="detalles-mensual" class="hidden flex-col gap-1 border-t border-slate-100 pt-2 mt-2">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Límite:</span>
+                            <span id="mensual-presupuesto" class="font-semibold text-slate-800">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Gastado:</span>
+                            <span id="mensual-gastos" class="font-semibold text-rose-600">-$0.00</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- PERIODO ANUAL -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-anual')">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Periodo Anual</span>
                     <div class="p-1.5 bg-amber-50 rounded-lg text-amber-600">
@@ -122,17 +184,21 @@
                     </div>
                 </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Límite:</span>
-                        <span id="anual-presupuesto" class="font-semibold text-slate-800">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Gastado:</span>
-                        <span id="anual-gastos" class="font-semibold text-rose-600">-$0.00</span>
-                    </div>
-                    <div class="flex justify-between border-t border-slate-100 pt-2 mt-2 items-center">
+                    <!-- Balance (Siempre visible) -->
+                    <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-slate-700">Balance:</span>
-                        <span id="anual-balance" class="text-sm font-bold text-slate-800">$0.00</span>
+                        <span id="anual-balance" class="text-lg font-bold text-slate-800">$0.00</span>
+                    </div>
+                    <!-- Detalles Ocultos -->
+                    <div id="detalles-anual" class="hidden flex-col gap-1 border-t border-slate-100 pt-2 mt-2">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Límite:</span>
+                            <span id="anual-presupuesto" class="font-semibold text-slate-800">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Gastado:</span>
+                            <span id="anual-gastos" class="font-semibold text-rose-600">-$0.00</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -206,37 +272,55 @@
                     </form>
 
                     <!-- FORMULARIO 2: ESTABLECER PRESUPUESTO (Oculto por defecto) -->
-                    <form id="form-presupuesto" class="space-y-4 hidden">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Presupuesto</label>
-                            <input type="text" id="pres-nombre" required placeholder="Ej. Presupuesto Comida, Límite Ocio..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Periodo Límite</label>
-                                <select id="pres-tipo" class="w-full rounded-xl border border-slate-200 p-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
-                                    <option value="Semanal">Semanal</option>
-                                    <option value="Mensual" selected>Mensual</option>
-                                    <option value="Anual">Anual</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Monto Límite ($)</label>
-                                <input type="number" step="0.01" id="pres-monto" placeholder="0.00" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Fecha de Inicio</label>
-                            <input type="date" id="pres-fecha" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Notas / Detalle</label>
-                            <textarea id="pres-detalle" rows="2" placeholder="Propósito de este presupuesto..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"></textarea>
-                        </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-emerald-600/10 hover:shadow-lg transition duration-200 text-sm flex justify-center items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg> Establecer Límite
-                        </button>
-                    </form>
+<form id="form-presupuesto" class="space-y-4 hidden">
+    <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Presupuesto</label>
+        <input type="text" id="pres-nombre" required placeholder="Ej. Presupuesto Comida, Límite Ocio..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm">
+    </div>
+    
+    <!-- Estructura actualizada a 3 columnas para incluir la categoría -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Categoría</label>
+            <select id="pres-tipo" class="w-full rounded-xl border border-slate-200 p-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                <option value="Comida">Comida</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Entretenimiento">Entretenimiento</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Vivienda">Vivienda</option>
+                <option value="Utensilios">Utensilios</option>
+                <option value="Educación">Educación</option>
+                <option value="Suscripciones">Suscripciones</option>
+                <option value="Salud">Salud</option>
+                <option value="Otros">Otros</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Periodo Límite</label>
+            <select id="pres-periodo" class="w-full rounded-xl border border-slate-200 p-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                <option value="Semanal">Semanal</option>
+                <option value="Mensual" selected>Mensual</option>
+                <option value="Anual">Anual</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Monto Límite ($)</label>
+            <input type="number" step="0.01" id="pres-monto" placeholder="0.00" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+        </div>
+    </div>
+
+    <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Fecha de Inicio</label>
+        <input type="date" id="pres-fecha" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+    </div>
+    <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Notas / Detalle</label>
+        <textarea id="pres-detalle" rows="2" placeholder="Propósito de este presupuesto..." class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"></textarea>
+    </div>
+    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-emerald-600/10 hover:shadow-lg transition duration-200 text-sm flex justify-center items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg> Establecer Límite
+    </button>
+</form>
                 </div>
             </div>
 
@@ -245,6 +329,14 @@
                 <div>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-6 gap-3">
                         <h3 id="titulo-seccion" class="font-bold text-slate-800 text-base">Historial de Transacciones</h3>
+                        <div class="flex gap-2">
+                            <select id="filtro-tiempo" class="hidden bg-slate-50 border-none text-xs font-bold text-slate-600 rounded-lg px-2 py-1.5 focus:ring-0">
+                                <option value="general">General</option>
+                                <option value="semanal">Semana</option>
+                                <option value="mensual">Mes</option>
+                                <option value="anual">Año</option>
+                            </select>
+                        </div>
                         
                         <!-- Tabs de Conmutación de Vista -->
                         <div class="flex bg-slate-100 p-1 rounded-xl">
@@ -301,440 +393,8 @@
         </div>
     </div>
 
-    <!-- CONEXIÓN JAVASCRIPT CON API GATEWAY Y MANEJO DE VISTAS -->
-    <script>
-        const API_BASE_URL = 'https://us54vdx1if.execute-api.us-east-1.amazonaws.com/dev'; 
+ 
 
-        // Variables Globales de Estado
-        let vistaActual = 'lista';
-        let datosGastos = [];
-        let datosPresupuestos = [];
-        let instGraficaGastos = null;
-        let instGraficaPresupuesto = null;
-
-        // --- SISTEMA DE TOAST NOTIFICATIONS ---
-        function mostrarToast(mensaje, tipo = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            // Selección del color y el icono del Toast según el tipo de respuesta
-            const bgClass = tipo === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
-            const icon = tipo === 'success' 
-                ? `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0"/></svg>`
-                : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
-
-            // Clases para animación de entrada flotante
-            toast.className = `flex items-center gap-3 ${bgClass} text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-8 opacity-0 transition-all duration-300 pointer-events-auto max-w-sm`;
-            toast.innerHTML = `
-                ${icon}
-                <span class="text-xs font-semibold">${mensaje}</span>
-            `;
-
-            container.appendChild(toast);
-
-            // Activación de la animación de entrada
-            setTimeout(() => {
-                toast.classList.remove('translate-y-8', 'opacity-0');
-            }, 10);
-
-            // Animación de salida y auto-eliminación después de 3 segundos
-            setTimeout(() => {
-                toast.classList.add('translate-y-8', 'opacity-0');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 3000);
-        }
-
-
-        // --- SISTEMA DE PESTAÑAS (TABS) DE FORMULARIOS ---
-        const tabBtnGasto = document.getElementById('tab-btn-gasto');
-        const tabBtnPresupuesto = document.getElementById('tab-btn-presupuesto');
-        const formGasto = document.getElementById('form-gasto');
-        const formPresupuesto = document.getElementById('form-presupuesto');
-
-        tabBtnGasto.addEventListener('click', () => {
-            tabBtnGasto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 bg-white text-rose-600 shadow-sm flex justify-center items-center gap-2";
-            tabBtnGasto.querySelector('span').className = "w-2 h-2 rounded-full bg-rose-500";
-            
-            tabBtnPresupuesto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 text-slate-500 hover:text-slate-800 flex justify-center items-center gap-2";
-            tabBtnPresupuesto.querySelector('span').className = "w-2 h-2 rounded-full bg-transparent";
-
-            formGasto.classList.remove('hidden');
-            formPresupuesto.classList.add('hidden');
-        });
-
-        tabBtnPresupuesto.addEventListener('click', () => {
-            tabBtnPresupuesto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm flex justify-center items-center gap-2";
-            tabBtnPresupuesto.querySelector('span').className = "w-2 h-2 rounded-full bg-emerald-500";
-            
-            tabBtnGasto.className = "w-1/2 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 text-slate-500 hover:text-slate-800 flex justify-center items-center gap-2";
-            tabBtnGasto.querySelector('span').className = "w-2 h-2 rounded-full bg-transparent";
-
-            formPresupuesto.classList.remove('hidden');
-            formGasto.classList.add('hidden');
-        });
-
-
-        // --- SISTEMA DE PESTAÑAS (TABS) PARA VISUALIZACIÓN ---
-        const btnSwitchLista = document.getElementById('btn-switch-lista');
-        const btnSwitchGrafica = document.getElementById('btn-switch-grafica');
-        const contenedorLista = document.getElementById('vista-lista');
-        const contenedorGrafica = document.getElementById('vista-grafica');
-        const tituloSeccion = document.getElementById('titulo-seccion');
-
-        function cambiarVista(vista) {
-            if (vista === 'lista') {
-                btnSwitchLista.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs";
-                btnSwitchGrafica.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
-                contenedorLista.classList.remove('hidden');
-                contenedorGrafica.classList.add('hidden');
-                tituloSeccion.innerText = 'Historial de Transacciones';
-                vistaActual = 'lista';
-            } else {
-                btnSwitchGrafica.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs";
-                btnSwitchLista.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
-                contenedorLista.classList.add('hidden');
-                contenedorGrafica.classList.remove('hidden');
-                tituloSeccion.innerText = 'Distribución Visual de Recursos';
-                vistaActual = 'grafica';
-                actualizarResumen(); 
-            }
-        }
-
-        btnSwitchLista.addEventListener('click', () => cambiarVista('lista'));
-        btnSwitchGrafica.addEventListener('click', () => cambiarVista('grafica'));
-
-
-        // Función para cargar los datos e indicadores en tiempo real (GET)
-        async function actualizarResumen() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/resumen`);
-                if (!response.ok) throw new Error('Error al consultar datos');
-                
-                const data = await response.json();
-
-                datosGastos = data.lista_gastos || [];
-                datosPresupuestos = data.lista_presupuestos || [];
-
-                // --- CÁLCULO DE INDICADORES EN EL FRONTEND ---
-                let presTotal = 0, presSemanal = 0, presMensual = 0, presAnual = 0;
-                let gasTotal = 0, gasSemanal = 0, gasMensual = 0, gasAnual = 0;
-
-                // 1. Procesar Presupuestos
-                datosPresupuestos.forEach(p => {
-                    const monto = parseFloat(p.Monto || 0);
-                    presTotal += monto;
-                    if (p.Tipo === 'Semanal') presSemanal += monto;
-                    else if (p.Tipo === 'Mensual') presMensual += monto;
-                    else if (p.Tipo === 'Anual') presAnual += monto;
-                });
-
-                // 2. Procesar Gastos
-                datosGastos.forEach(g => {
-                    const monto = parseFloat(g.Monto || 0);
-                    gasTotal += monto;
-                    const freq = g.Periodo || 'Mensual'; 
-                    if (freq === 'Semanal') gasSemanal += monto;
-                    else if (freq === 'Mensual') gasMensual += monto;
-                    else if (freq === 'Anual') gasAnual += monto;
-                });
-
-                // 3. Calcular balances correspondientes
-                const balTotal = presTotal - gasTotal;
-                const balSemanal = presSemanal - gasSemanal;
-                const balMensual = presMensual - gasMensual;
-                const balAnual = presAnual - gasAnual;
-
-                // --- ACTUALIZAR ELEMENTOS DE LA INTERFAZ ---
-                document.getElementById('total-presupuesto').innerText = `$${presTotal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                document.getElementById('total-gastos').innerText = `-$${gasTotal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                actualizarEstiloBalance('balance-actual', balTotal);
-
-                document.getElementById('semanal-presupuesto').innerText = `$${presSemanal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                document.getElementById('semanal-gastos').innerText = `-$${gasSemanal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                actualizarEstiloBalance('semanal-balance', balSemanal);
-
-                document.getElementById('mensual-presupuesto').innerText = `$${presMensual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                document.getElementById('mensual-gastos').innerText = `-$${gasMensual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                actualizarEstiloBalance('mensual-balance', balMensual);
-
-                document.getElementById('anual-presupuesto').innerText = `$${presAnual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                document.getElementById('anual-gastos').innerText = `-$${gasAnual.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-                actualizarEstiloBalance('anual-balance', balAnual);
-
-                renderizarListas();
-
-                if (vistaActual === 'grafica') {
-                    renderizarGraficas(presSemanal, presMensual, presAnual, gasSemanal, gasMensual, gasAnual);
-                }
-
-            } catch (err) {
-                console.error("Error al cargar el resumen:", err);
-            }
-        }
-
-        // Auxiliar para colorear dinámicamente los balances
-        function actualizarEstiloBalance(idElemento, balance) {
-            const el = document.getElementById(idElemento);
-            el.innerText = `$${balance.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
-            if (balance < 0) {
-                el.className = "text-sm font-extrabold text-rose-600";
-            } else {
-                el.className = "text-sm font-extrabold text-emerald-600";
-            }
-        }
-
-        // Función para renderizar las transacciones en la lista
-        function renderizarListas() {
-            const contenedorGastos = document.getElementById('lista-gastos-contenedor');
-            const contenedorPresupuestos = document.getElementById('lista-presupuestos-contenedor');
-
-            // Renderizar lista de Gastos
-            if (datosGastos.length === 0) {
-                contenedorGastos.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 text-center">
-                        <p class="text-slate-400 italic text-xs">No hay gastos guardados.</p>
-                    </div>`;
-            } else {
-                contenedorGastos.innerHTML = datosGastos.map(g => `
-                    <div class="group bg-slate-50 hover:bg-slate-100 p-3.5 rounded-xl border border-slate-100 flex justify-between items-center transition-all relative pr-10 shadow-xs">
-                        <div class="space-y-1">
-                            <p class="font-bold text-slate-800 text-xs tracking-tight">${g.Nombre}</p>
-                            <div class="flex flex-wrap gap-1 items-center">
-                                <span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">${g.Tipo}</span>
-                                <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">${g.Periodo || 'Mensual'}</span>
-                                <span class="text-[9px] font-medium text-slate-400 ml-1">${g.Fecha}</span>
-                            </div>
-                            ${g.Detalle ? `<p class="text-[10px] text-slate-400 italic mt-1 bg-white border border-slate-100/80 rounded px-1.5 py-0.5 inline-block">"${g.Detalle}"</p>` : ''}
-                        </div>
-                        <span class="font-extrabold text-rose-600 text-xs">-$${parseFloat(g.Monto).toFixed(2)}</span>
-                        
-                        <button onclick="eliminarGasto('${g.id_gasto}')" class="absolute right-3.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-600 transition-all duration-150 p-1 rounded-md hover:bg-rose-50" title="Eliminar Gasto">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
-                    </div>
-                `).join('');
-            }
-
-            // Renderizar lista de Presupuestos
-            if (datosPresupuestos.length === 0) {
-                contenedorPresupuestos.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 text-center">
-                        <p class="text-slate-400 italic text-xs">No hay presupuestos fijados.</p>
-                    </div>`;
-            } else {
-                contenedorPresupuestos.innerHTML = datosPresupuestos.map(p => `
-                    <div class="group bg-slate-50 hover:bg-slate-100 p-3.5 rounded-xl border border-slate-100 flex justify-between items-center transition-all relative pr-10 shadow-xs">
-                        <div class="space-y-1">
-                            <p class="font-bold text-slate-800 text-xs tracking-tight">${p.Nombre}</p>
-                            <div class="flex flex-wrap gap-1 items-center">
-                                <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">${p.Tipo}</span>
-                                <span class="text-[9px] font-medium text-slate-400 ml-1">${p.Fecha}</span>
-                            </div>
-                            ${p.Detalle ? `<p class="text-[10px] text-slate-400 italic mt-1 bg-white border border-slate-100/80 rounded px-1.5 py-0.5 inline-block">"${p.Detalle}"</p>` : ''}
-                        </div>
-                        <span class="font-extrabold text-emerald-600 text-xs">+$${parseFloat(p.Monto).toFixed(2)}</span>
-                        
-                        <button onclick="eliminarPresupuesto('${p.id_presupuesto}')" class="absolute right-3.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-600 transition-all duration-150 p-1 rounded-md hover:bg-rose-50" title="Eliminar Presupuesto">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // Llamar API DELETE para Gastos
-        async function eliminarGasto(idGasto) {
-            if (!confirm('¿Estás seguro de que deseas eliminar este gasto?')) return;
-            try {
-                const response = await fetch(`${API_BASE_URL}/gasto?id_gasto=${idGasto}`, {
-                    method: 'DELETE'
-                });
-                if (response.ok) {
-                    actualizarResumen();
-                    mostrarToast('Gasto eliminado correctamente', 'success');
-                } else {
-                    const errData = await response.json();
-                    mostrarToast(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`, 'error');
-                }
-            } catch (err) {
-                mostrarToast('No se pudo comunicar con el servidor.', 'error');
-            }
-        }
-
-        // Llamar API DELETE para Presupuestos
-        async function eliminarPresupuesto(idPresupuesto) {
-            if (!confirm('¿Estás seguro de que deseas eliminar este presupuesto?')) return;
-            try {
-                const response = await fetch(`${API_BASE_URL}/presupuesto?id_presupuesto=${idPresupuesto}`, {
-                    method: 'DELETE'
-                });
-                if (response.ok) {
-                    actualizarResumen();
-                    mostrarToast('Límite de presupuesto eliminado', 'success');
-                } else {
-                    const errData = await response.json();
-                    mostrarToast(`Error al eliminar: ${errData.error || 'Intente de nuevo'}`, 'error');
-                }
-            } catch (err) {
-                mostrarToast('No se pudo comunicar con el servidor.', 'error');
-            }
-        }
-
-        // Función para renderizar las dos gráficas simultáneamente
-        function renderizarGraficas(presS, presM, presA, gasS, gasM, gasA) {
-            if (instGraficaGastos) instGraficaGastos.destroy();
-            if (instGraficaPresupuesto) instGraficaPresupuesto.destroy();
-
-            // --- GRÁFICA 1: GASTOS POR CATEGORÍA (PIE) ---
-            const ctxGastos = document.getElementById('canvasGraficaGastos').getContext('2d');
-            const catValores = {};
-            datosGastos.forEach(g => {
-                const categoria = g.Tipo || 'Otros';
-                const monto = parseFloat(g.Monto || 0);
-                catValores[categoria] = (catValores[categoria] || 0) + monto;
-            });
-
-            instGraficaGastos = new Chart(ctxGastos, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(catValores),
-                    datasets: [{
-                        data: Object.values(catValores),
-                        backgroundColor: ['#f43f5e', '#3b82f6', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#64748b'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, family: 'Plus Jakarta Sans' } } }
-                    }
-                }
-            });
-
-            // --- GRÁFICA 2: COMPARATIVO PRESUPUESTO VS GASTOS (BAR) ---
-            const ctxPresupuesto = document.getElementById('canvasGraficaPresupuesto').getContext('2d');
-            instGraficaPresupuesto = new Chart(ctxPresupuesto, {
-                type: 'bar',
-                data: {
-                    labels: ['Semanal', 'Mensual', 'Anual'],
-                    datasets: [
-                        {
-                            label: 'Límite Presupuestado',
-                            data: [presS, presM, presA],
-                            backgroundColor: '#10b981',
-                            borderRadius: 6,
-                            borderWidth: 0
-                        },
-                        {
-                            label: 'Gasto Realizado',
-                            data: [gasS, gasM, gasA],
-                            backgroundColor: '#f43f5e',
-                            borderRadius: 6,
-                            borderWidth: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f1f5f9' },
-                            ticks: { font: { size: 9, family: 'Plus Jakarta Sans' } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { size: 10, family: 'Plus Jakarta Sans' } }
-                        }
-                    },
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, family: 'Plus Jakarta Sans' } } }
-                    }
-                }
-            });
-        }
-
-        // Evento POST: Guardar Gasto
-        document.getElementById('form-gasto').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                Nombre: document.getElementById('gasto-nombre').value,
-                Tipo: document.getElementById('gasto-tipo').value,
-                Periodo: document.getElementById('gasto-periodo').value, 
-                Monto: parseFloat(document.getElementById('gasto-monto').value),
-                Fecha: document.getElementById('gasto-fecha').value,
-                Detalle: document.getElementById('gasto-detalle').value
-            };
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/gasto`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (response.ok) {
-                    document.getElementById('form-gasto').reset();
-                    // Restaurar fecha a la de hoy por comodidad
-                    document.getElementById('gasto-fecha').value = new Date().toISOString().split('T')[0];
-                    actualizarResumen();
-                    
-                    // Notificación de éxito flotante
-                    mostrarToast('¡Gasto registrado con éxito!', 'success');
-                } else {
-                    const errData = await response.json();
-                    mostrarToast(`Error: ${errData.error || 'No se pudo registrar'}`, 'error');
-                }
-            } catch (err) {
-                mostrarToast('Error al conectar con API Gateway', 'error');
-            }
-        });
-
-        // Evento POST: Guardar Presupuesto
-        document.getElementById('form-presupuesto').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                Nombre: document.getElementById('pres-nombre').value,
-                Tipo: document.getElementById('pres-tipo').value,
-                Monto: parseFloat(document.getElementById('pres-monto').value),
-                Fecha: document.getElementById('pres-fecha').value,
-                Detalle: document.getElementById('pres-detalle').value
-            };
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/presupuesto`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (response.ok) {
-                    document.getElementById('form-presupuesto').reset();
-                    document.getElementById('pres-fecha').value = new Date().toISOString().split('T')[0];
-                    actualizarResumen();
-                    
-                    // Notificación de éxito para límites establecidos
-                    mostrarToast('¡Límite de presupuesto definido!', 'success');
-                } else {
-                    const errData = await response.json();
-                    mostrarToast(`Error: ${errData.error || 'No se pudo establecer'}`, 'error');
-                }
-            } catch (err) {
-                mostrarToast('Error al conectar con API Gateway', 'error');
-            }
-        });
-
-        window.onload = () => {
-            // Inicializar fecha de los formularios con el día de hoy
-            const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('gasto-fecha').value = hoy;
-            document.getElementById('pres-fecha').value = hoy;
-            actualizarResumen();
-        };
-    </script>
+<script src="app.js"></script>
 </body>
 </html>
