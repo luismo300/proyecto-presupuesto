@@ -18,6 +18,10 @@
 
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
 
+    <!-- CONTENEDOR FLOTANTE PARA TOASTS -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none">
+    </div>
+
     <!-- Barra de navegación premium -->
     <nav class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 backdrop-blur-md bg-opacity-95 border-b border-slate-800">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -39,57 +43,54 @@
         </div>
     </nav>
 
-    <!-- CONTENEDOR FLOTANTE PARA TOASTS -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
-    
-    
 
+    <!-- CONTENEDOR PARA TODO -->
     <div class="container mx-auto px-4 md:px-6 mt-8 max-w-7xl">
         
-<!-- Contenedor alineado a la izquierda -->
-<div class="flex justify-start mb-6">
-    <div id="contenedor-fecha" class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl transition-all cursor-pointer hover:border-indigo-500/50 hover:bg-slate-750 relative select-none">
-        <!-- Icono -->
-        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        
-        <!-- Texto de la fecha -->
-        <span id="fecha-actual" class="text-xs font-bold text-slate-300 uppercase tracking-wide">Hoy</span>
-        
-        <!-- Input invisible (posicionado sobre todo el contenedor) -->
-        <input type="date" id="cambiar-fecha-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-    </div>
-</div>
+        <!-- SECCIÓN 0: FECHA Y CALENDARIO -->
+        <div class="flex justify-start mb-6">
+            <div id="contenedor-fecha" class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl transition-all cursor-pointer hover:border-indigo-500/50 hover:bg-slate-750 relative select-none">
+                <!-- Icono -->
+                <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                
+                <!-- Texto de la fecha -->
+                <span id="fecha-actual" class="text-xs font-bold text-slate-300 uppercase tracking-wide">Hoy</span>
+                
+                <!-- Input invisible (posicionado sobre todo el contenedor) -->
+                <input type="date" id="cambiar-fecha-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+            </div>
+        </div>
                 
         <!-- SECCIÓN 1: INDICADORES EN TIEMPO REAL -->
         <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mb-8 items-start">
 
             <!-- HISTÓRICO TOTAL  -->
-        <div class="bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-700 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-historico')">
-            <div class="flex justify-between items-start mb-3">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Histórico Total</span>
-                <div class="p-1.5 bg-slate-700 rounded-lg text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                </div>
-            </div>
-            <div class="space-y-1">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-300">Balance:</span>
-                    <span id="historico-balance" class="text-lg font-bold text-white">$0.00</span>
-                </div>
-                <div id="detalles-historico" class="hidden flex-col gap-1 border-t border-slate-700 pt-2 mt-2">
-                    <div class="flex justify-between text-xs text-slate-400">
-                        <span>Total Presup.:</span>
-                        <span id="historico-presupuesto" class="font-semibold text-emerald-400">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-slate-400">
-                        <span>Total Gastado:</span>
-                        <span id="historico-gastos" class="font-semibold text-rose-400">-$0.00</span>
+            <div class="bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-700 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-historico')">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Histórico Total</span>
+                    <div class="p-1.5 bg-slate-700 rounded-lg text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
                 </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-300">Balance:</span>
+                        <span id="historico-balance" class="text-lg font-bold text-white">$0.00</span>
+                    </div>
+                    <div id="detalles-historico" class="hidden flex-col gap-1 border-t border-slate-700 pt-2 mt-2">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>Total Presup.:</span>
+                            <span id="historico-presupuesto" class="font-semibold text-emerald-400">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>Total Gastado:</span>
+                            <span id="historico-gastos" class="font-semibold text-rose-400">-$0.00</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
             
             <!-- ACUMULADO TOTAL -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer select-none" onclick="toggleDetails('detalles-general')">
@@ -205,7 +206,7 @@
 
         </div>
 
-        <!-- SECCIÓN CENTRAL DE TRABAJO -->
+        <!-- SECCIÓN 2: CENTRAL DE TRABAJO -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
             
             <!-- PANEL IZQUIERDO: TABS DE FORMULARIOS UNIFICADOS (5 COLS) -->
@@ -391,6 +392,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
  
