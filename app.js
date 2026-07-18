@@ -134,85 +134,43 @@ btnSwitchGrafica.addEventListener('click', () => cambiarVista('grafica'));
 // --- COMUNICACIÓN CON EL SERVIDOR (API GATEWAY) ---
 async function actualizarResumen() {
     try {
-    const response = await fetch(`${API_BASE_URL}/resumen`);
-    if (!response.ok) throw new Error('Error al consultar datos');
+        const fechaFormateada = HOY.toISOString().split('T')[0];
+        const response = await fetch(`${API_BASE_URL}/resumen?fecha=${fechaFormateada}`);
+        if (!response.ok) throw new Error('Error al consultar datos');
 
-    const data = await response.json();
-    datosGastos = data.lista_gastos || [];
-    datosPresupuestos = data.lista_presupuestos || [];
+        const data = await response.json();
+        const { gastos, presupuestos, total_presupuesto, total_gastos, balance_general } = data.indicadores;
 
-    // 1. Definir rangos basados en la fecha global HOY
-    const ahora = HOY;
-    const mesActual = ahora.getMonth();
-    const anioActual = ahora.getFullYear();
+        // 1. Actualizar el Total
+        document.getElementById('total-presupuesto').innerText = `$${total_presupuesto.toFixed(2)}`;
+        document.getElementById('total-gastos').innerText = `-$${total_gastos.toFixed(2)}`;
+        actualizarEstiloBalance('total-balance', balance_general);
 
-    // Calcular inicio y fin de semana de la fecha seleccionada
-    const inicioSemana = new Date(ahora);
-    inicioSemana.setDate(ahora.getDate() - ahora.getDay());
-    inicioSemana.setHours(0,0,0,0);
+        // 2. Actualizar UI de periodos
+        const setUI = (p) => {
+            const key = p.charAt(0).toUpperCase() + p.slice(1);
+            const pVal = presupuestos[key];
+            const gVal = gastos[key];
+            
+            document.getElementById(`${p}-presupuesto`).innerText = `$${pVal.toFixed(2)}`;
+            document.getElementById(`${p}-gastos`).innerText = `-$${gVal.toFixed(2)}`;
+            actualizarEstiloBalance(`${p}-balance`, pVal - gVal);
+        };
 
-    const finSemana = new Date(inicioSemana);
-    finSemana.setDate(finSemana.getDate() + 6);
-    finSemana.setHours(23,59,59,999);
+        ['historico', 'semanal', 'mensual', 'anual'].forEach(setUI);
 
-    // 2. Inicializar acumuladores
-    let presHistorico = 0, presSemanal = 0, presMensual = 0, presAnual = 0;
-    let gasHistorico = 0, gasSemanal = 0, gasMensual = 0, gasAnual = 0;
+        // 3. Renderizado de listas y gráficas
+        filtrarYAplicarListas(data.lista_gastos, data.lista_presupuestos);
 
-    // 3. Procesar Presupuestos
-    datosPresupuestos.forEach(p => {
-        const monto = parseFloat(p.Monto || 0);
-        const fechaP = parsearFechaLocal(p.Fecha);
-        presHistorico += monto;
-
-        if (p.Periodo === 'Semanal' && fechaP >= inicioSemana && fechaP <= finSemana) presSemanal += monto;
-        else if (p.Periodo === 'Mensual' && fechaP.getMonth() === mesActual && fechaP.getFullYear() === anioActual) presMensual += monto;
-        else if (p.Periodo === 'Anual' && fechaP.getFullYear() === anioActual) presAnual += monto;
-    });
-
-    // 4. Procesar Gastos
-    datosGastos.forEach(g => {
-        const monto = parseFloat(g.Monto || 0);
-        const fechaG = parsearFechaLocal(g.Fecha);
-        gasHistorico += monto;
-
-        if (g.Periodo === 'Semanal' && fechaG >= inicioSemana && fechaG <= finSemana) gasSemanal += monto;
-        else if (g.Periodo === 'Mensual' && fechaG.getMonth() === mesActual && fechaG.getFullYear() === anioActual) gasMensual += monto;
-        else if (g.Periodo === 'Anual' && fechaG.getFullYear() === anioActual) gasAnual += monto;
-    });
-
-    // 5. Cálculos de balances
-    const presGeneral = presSemanal + presMensual + presAnual;
-    const gasGeneral = gasSemanal + gasMensual + gasAnual;
-
-    // Actualizar UI
-    document.getElementById('total-presupuesto').innerText = `$${presGeneral.toFixed(2)}`;
-    document.getElementById('total-gastos').innerText = `-$${gasGeneral.toFixed(2)}`;
-    actualizarEstiloBalance('balance-actual', presGeneral - gasGeneral);
-
-    document.getElementById('historico-presupuesto').innerText = `$${presHistorico.toFixed(2)}`;
-    document.getElementById('historico-gastos').innerText = `-$${gasHistorico.toFixed(2)}`;
-    actualizarEstiloBalance('historico-balance', presHistorico - gasHistorico);
-
-    document.getElementById('semanal-presupuesto').innerText = `$${presSemanal.toFixed(2)}`;
-    document.getElementById('semanal-gastos').innerText = `-$${gasSemanal.toFixed(2)}`;
-    actualizarEstiloBalance('semanal-balance', presSemanal - gasSemanal);
-
-    document.getElementById('mensual-presupuesto').innerText = `$${presMensual.toFixed(2)}`;
-    document.getElementById('mensual-gastos').innerText = `-$${gasMensual.toFixed(2)}`;
-    actualizarEstiloBalance('mensual-balance', presMensual - gasMensual);
-
-    document.getElementById('anual-presupuesto').innerText = `$${presAnual.toFixed(2)}`;
-    document.getElementById('anual-gastos').innerText = `-$${gasAnual.toFixed(2)}`;
-    actualizarEstiloBalance('anual-balance', presAnual - gasAnual);
-
-    filtrarYAplicarListas(data.lista_gastos, data.lista_presupuestos);
-
-    if (vistaActual === 'grafica') {
-        renderizarGraficas(presSemanal, presMensual, presAnual, gasSemanal, gasMensual, gasAnual);
-    }
+        // Llamada a la gráfica pasando los indicadores extraídos
+        renderizarGraficas(
+            presupuestos.Semanal, presupuestos.Mensual, presupuestos.Anual,
+            gastos.Semanal, gastos.Mensual, gastos.Anual,
+            data.lista_gastos // Pasamos la lista para calcular el Pie Chart
+        );
+        
     } catch (err) {
-    console.error("Error al cargar el resumen:", err);
+        console.error("Error al cargar el resumen:", err);
     }
 }
 
@@ -422,13 +380,14 @@ document.getElementById('form-presupuesto').addEventListener('submit', async (e)
 });
 
 // --- GRÁFICAS (CHART.JS) ---
-function renderizarGraficas(presS, presM, presA, gasS, gasM, gasA) {
+function renderizarGraficas(presS, presM, presA, gasS, gasM, gasA, listaGastosActual) {
     if (instGraficaGastos) instGraficaGastos.destroy();
     if (instGraficaPresupuesto) instGraficaPresupuesto.destroy();
 
+    // Lógica para el gráfico de PIE (Gastos por categoría)
     const ctxGastos = document.getElementById('canvasGraficaGastos').getContext('2d');
     const catValores = {};
-    datosGastos.forEach(g => {
+    listaGastosActual.forEach(g => {
         const categoria = g.Tipo || 'Otros';
         const monto = parseFloat(g.Monto || 0);
         catValores[categoria] = (catValores[categoria] || 0) + monto;
@@ -454,6 +413,7 @@ function renderizarGraficas(presS, presM, presA, gasS, gasM, gasA) {
         }
     });
 
+    // Lógica para el gráfico de BARRAS (Comparativa Presupuesto vs Gasto)
     const ctxPresupuesto = document.getElementById('canvasGraficaPresupuesto').getContext('2d');
     instGraficaPresupuesto = new Chart(ctxPresupuesto, {
         type: 'bar',
